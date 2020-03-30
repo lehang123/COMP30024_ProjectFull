@@ -12,6 +12,13 @@ class ExamplePlayer:
         strings "white" or "black" correspondingly.
         """
         # TODO: Set up state representation.
+        self.game_state = {}
+        white_init = [[x, y] for x in range(0,8) for y in range(0,2) if (x != 2 and x != 5)]
+        black_init = [[x, y] for x in range(0,8) for y in range(6,8) if (x != 2 and x != 5)]
+
+        if colour == 'white':
+            self.game_state = {'self': []}
+
 
 
     def action(self):
@@ -24,6 +31,7 @@ class ExamplePlayer:
         represented based on the spec's instructions for representing actions.
         """
         # TODO: Decide what action to take, and return it
+
         return ("BOOM", (0, 0))
 
 
