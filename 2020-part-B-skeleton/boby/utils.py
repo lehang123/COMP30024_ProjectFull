@@ -401,3 +401,12 @@ def json_to_board(data):
         dict[position] = stack
 
     return dict
+
+def board_dict_to_tuple(dic):
+    """
+    :param dic: dictionary that convert to tuple
+    """
+    white_pieces = dic['white']
+    black_pieces = dic['black']
+
+    return [lists_to_tuples(white_pieces), lists_to_tuples(black_pieces)]
