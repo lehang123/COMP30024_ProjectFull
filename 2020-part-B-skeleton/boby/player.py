@@ -1,3 +1,5 @@
+from boby.utils import make_nodes
+
 
 class ExamplePlayer:
     def __init__(self, colour):
@@ -11,15 +13,15 @@ class ExamplePlayer:
         program will play as (White or Black). The value will be one of the 
         strings "white" or "black" correspondingly.
         """
-        # TODO: Set up state representation.
-        self.game_state = {}
-        white_init = [[x, y] for x in range(0,8) for y in range(0,2) if (x != 2 and x != 5)]
-        black_init = [[x, y] for x in range(0,8) for y in range(6,8) if (x != 2 and x != 5)]
 
-        if colour == 'white':
-            self.game_state = {'self': []}
-
-
+        white_init = [[1, x, y] for x in range(0,8) for y in range(0,2) if (x != 2 and x != 5)]
+        black_init = [[1, x, y] for x in range(0,8) for y in range(6,8) if (x != 2 and x != 5)]
+        self.game_state = {'white': white_init, 'black': black_init}
+        self.me = colour
+        if self.me == 'white':
+            self.oppo = 'black'
+        else :
+            self.oppo = 'white'
 
     def action(self):
         """
@@ -31,6 +33,12 @@ class ExamplePlayer:
         represented based on the spec's instructions for representing actions.
         """
         # TODO: Decide what action to take, and return it
+
+        # make a all the possible actions that I can take
+        actions = make_nodes(self.game_state, self.me, self.oppo)
+
+        # TODO: minimax and alpha beta pruning here
+
 
         return ("BOOM", (0, 0))
 
