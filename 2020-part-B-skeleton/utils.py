@@ -1,9 +1,17 @@
 
 
-def make_nodes(data, me, opponent):
+def make_nodes(board, turn):
+    """
+
+    :param board: the current board
+    :param turn: who's turn to move
+    :return: all the legal moves
+    """
     # all the white stacks are ours to move
-    stacks = data[me]
-    oppo_stacks = data[opponent]
+
+    opponent = 'white' if turn == 'black' else 'black'
+    stacks = board[turn]
+    oppo_stacks = board[opponent]
 
     blocks = [stack[1:] for stack in oppo_stacks]
 
@@ -16,21 +24,21 @@ def make_nodes(data, me, opponent):
             for k in range(1, n + 1):
                 moved_up_stacks = move_up(stack, i, k, blocks)
                 if moved_up_stacks:
-                    update_nodes(oppo_stacks, moved_up_stacks, stacks, nodes, j, me, opponent)
+                    update_nodes(oppo_stacks, moved_up_stacks, stacks, nodes, j, turn, opponent)
 
                 moved_down_stacks = move_down(stack, i, k, blocks)
                 if moved_down_stacks:
-                    update_nodes(oppo_stacks, moved_down_stacks, stacks, nodes, j, me, opponent)
+                    update_nodes(oppo_stacks, moved_down_stacks, stacks, nodes, j, turn, opponent)
 
                 moved_left_stacks = move_left(stack, i, k, blocks)
                 if moved_left_stacks:
-                    update_nodes(oppo_stacks, moved_left_stacks, stacks, nodes, j, me, opponent)
+                    update_nodes(oppo_stacks, moved_left_stacks, stacks, nodes, j, turn, opponent)
 
                 moved_right_stacks = move_right(stack, i, k, blocks)
                 if moved_right_stacks:
-                    update_nodes(oppo_stacks, moved_right_stacks, stacks, nodes, j, me, opponent)
+                    update_nodes(oppo_stacks, moved_right_stacks, stacks, nodes, j, turn, opponent)
 
-        node = data.copy()
+        node = board.copy()
         boom(stack, node)
         nodes.append(node)
 
@@ -244,6 +252,10 @@ def tuples_to_lists(tuples):
     else:
         return tuples
 
+def first_max(tup1, tup2):
+    return tup1 if tup1[0]>=tup2[0] else tup2
+
+
 
 def print_board(board_dict, message="", unicode=False, compact=True, **kwargs):
     """
@@ -410,3 +422,31 @@ def board_dict_to_tuple(dic):
     black_pieces = dic['black']
 
     return [lists_to_tuples(white_pieces), lists_to_tuples(black_pieces)]
+
+def convert_move_to_node(move):
+    """
+    push a move to the board
+    :param move: the move made on board, format : ('move or boom', ('how many','from', 'to') or 'boom at')
+    """
+    assert self.game_result == Board.Result.ON_GOING
+
+    (action, param) = move
+
+    # check if move is legal
+    legal_move = False
+
+    new_stacks = []
+    color = int(self.turn.value)
+
+    if color == 0:
+        block_color = 1
+        self.white_turn_count +=1
+        self.turn = Board.Turn.BlACK
+    else:
+        block_color = 0
+        self.black_turn_count +=1
+        self.turn = Board.Turn.WHITE
+
+    blocks = self.state[block_color]
+
+    stacks = self.state[color]

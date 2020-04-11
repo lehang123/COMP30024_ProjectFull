@@ -1,6 +1,7 @@
 from enum import Enum
-from boby.utils import lists_to_tuples, tuples_to_lists, boom, print_board, make_nodes, board_dict_to_tuple
 from random import choice
+
+from utils import tuples_to_lists, print_board, make_nodes, board_dict_to_tuple
 
 
 class Environment:
@@ -12,6 +13,13 @@ class Environment:
         reset the board
         """
         self.board = Board()
+
+    def get_board(self):
+        state = self.board.state
+        return {"white": tuples_to_lists(state[0]), "black": tuples_to_lists(state[1])}
+
+    def get_turn(self):
+        return self.board.get_turn()
 
     def make_move(self, board_dict):
         """
@@ -27,10 +35,17 @@ class Environment:
 
     def make_random_move(self):
         moves = self.get_legal_moves()
-        move = choice(moves)
+
+        move_tups = []
+        for move in moves:
+            [whites, blacks] = board_dict_to_tuple(move)
+            tup = tuple(sorted(whites)), tuple(sorted(blacks))
+            move_tups.append(tup)
+
+        move = choice(move_tups)
         self.board.push(move)
 
-    def get_reward(self, player):
+    def get_reward(self):
         """
         according to the board to determine the result
         :return : the reward value
@@ -38,17 +53,29 @@ class Environment:
         result = self.board.get_result()
         if result == Board.Result.DRAWS:
             return 0
-        if player == 'white':
-            if result == Board.Result.WHITE_WINS:
-                return 1
-            if result == Board.Result.BLACK_WINS:
-                return -1
+        elif result == Board.Result.WHITE_WINS:
+            return 1
+        elif result == Board.Result.BLACK_WINS:
+            return -1
         else:
-            if result == Board.Result.BLACK_WINS:
-                return 1
-            if result == Board.Result.WHITE_WINS:
-                return -1
-        return None
+            return None
+
+    def play(self, players):
+        """
+        simulating the play ground,
+
+        :param players: the two players, player[0] is white, player[1] is black
+        :return: the reward (in here we always refer to white)
+        """
+        reward = self.get_reward()
+
+        while reward is None:
+            player = players[self.board.turn.value]
+            move = player.get_move()
+            self.make_move(move)
+            reward = self.get_reward()
+
+        return reward
 
 
 class Board:
@@ -86,7 +113,8 @@ class Board:
         """
         assert self.game_result == Board.Result.ON_GOING
 
-        legal_moves = self.get_legal_moves()
+        legal_moves = self.get_legal_moves(turn_to_tuple=True)
+
         (whites, blacks) = move
         sorted_move = tuple(sorted(whites)), tuple(sorted(blacks))
         assert sorted_move in legal_moves
@@ -105,24 +133,26 @@ class Board:
         self.update_game()
         self.print_board()
 
-    def get_legal_moves(self):
+    def get_legal_moves(self, turn_to_tuple=False):
         """
         get current board's legal moves
         :return: legal moves
         """
         board_dict = {'white': tuples_to_lists(self.state[0]), 'black': tuples_to_lists(self.state[1])}
-        if self.turn == Board.Turn.WHITE:
-            legal_move_dicts = make_nodes(board_dict, 'white', 'black')
-        else :
-            legal_move_dicts = make_nodes(board_dict, 'black', 'white')
+        legal_move_dicts = make_nodes(board_dict, self.get_turn())
 
-        legal_moves_list = []
-        for lmd in legal_move_dicts:
-            [whites, blacks] = board_dict_to_tuple(lmd)
-            tup = tuple(sorted(whites)), tuple(sorted(blacks))
-            legal_moves_list.append(tup)
+        if turn_to_tuple:
+            legal_moves_list = []
+            for lmd in legal_move_dicts:
+                [whites, blacks] = board_dict_to_tuple(lmd)
+                tup = tuple(sorted(whites)), tuple(sorted(blacks))
+                legal_moves_list.append(tup)
+            return legal_moves_list
+        else:
+            return legal_move_dicts
 
-        return legal_moves_list
+    def get_turn(self):
+        return 'white' if self.turn == Board.Turn.WHITE else 'black'
 
     def update_game(self):
         """
@@ -164,6 +194,6 @@ class Board:
 # b = e.board
 # for i in range(250):
 #     e.make_move(make_nodes({'white': tuples_to_lists(b.state[0]),
-#      'black': tuples_to_lists(b.state[1])}, 'white', 'black')[0])
+#      'black': tuples_to_lists(b.state[1])}, e.get_turn())[0])
 #     e.make_random_move()
 #     b.push(b.get_legal_moves()[0])
