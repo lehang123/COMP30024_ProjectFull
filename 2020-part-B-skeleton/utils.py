@@ -1,10 +1,11 @@
 
 
-def make_nodes(board, turn):
+def make_nodes(board, turn, include_boom=True):
     """
 
     :param board: the current board
     :param turn: who's turn to move
+    :param include_boom: include the boom action in nodes
     :return: all the legal moves
     """
     # all the white stacks are ours to move
@@ -38,9 +39,10 @@ def make_nodes(board, turn):
                 if moved_right_stacks:
                     update_nodes(oppo_stacks, moved_right_stacks, stacks, nodes, j, turn, opponent)
 
-        node = board.copy()
-        boom(stack, node)
-        nodes.append(node)
+        if include_boom:
+            node = board.copy()
+            boom(stack, node)
+            nodes.append(node)
 
     return nodes
 
@@ -181,8 +183,9 @@ def boom_zone(stack, exclude_self=False):
     :param exclude_self: return boom zone including current location ?
     :return all the affected zone
     """
-    x = stack[0]
-    y = stack[1]
+    x, y = stack
+    # x = stack[0]
+    # y = stack[1]
 
     if exclude_self:
         return [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
@@ -414,6 +417,7 @@ def json_to_board(data):
 
     return dict
 
+
 def board_dict_to_tuple(dic):
     """
     :param dic: dictionary that convert to tuple
@@ -423,30 +427,82 @@ def board_dict_to_tuple(dic):
 
     return [lists_to_tuples(white_pieces), lists_to_tuples(black_pieces)]
 
-def convert_move_to_node(move):
+
+def string_to_tuple(string):
+    x, y = string.split(",")
+    return int(x), int(y)
+
+
+def nodes_to_move(before, after, color):
     """
-    push a move to the board
-    :param move: the move made on board, format : ('move or boom', ('how many','from', 'to') or 'boom at')
+    to convert the change of two node (before and after) to the user input command
+    :param before: the node before (in dictionary form) {'white': xxx, 'black': xxx}
+    :param after: the node after (in dictionary form) {'white': xxx, 'black': xxx}
+    :param color: the color that moved
+    :return: the user input command
     """
-    assert self.game_result == Board.Result.ON_GOING
 
-    (action, param) = move
+    cur_pieces = lists_to_tuples(before[color])
+    nex_pieces = lists_to_tuples(after[color])
 
-    # check if move is legal
-    legal_move = False
+    cur_pieces_num = sum([w[0] for w in cur_pieces])
+    nex_pieces_num = sum([w[0] for w in nex_pieces])
+    if cur_pieces_num == nex_pieces_num:
+        # nothing boom, it's an move action
+        _before = set(cur_pieces).difference(nex_pieces)
+        _after = set(nex_pieces).difference(cur_pieces)
 
-    new_stacks = []
-    color = int(self.turn.value)
+        # the movement
+        n_m, x_1, y_1, x_2, y_2 = (0, -1, -1, -1, -1)
 
-    if color == 0:
-        block_color = 1
-        self.white_turn_count +=1
-        self.turn = Board.Turn.BlACK
+        if len(_before) == len(_after):
+            # no difference in positions, means move from stack to stack
+            if len(_before) == 2:
+                [(b_n, b_x, b_y), (_, b_x1, b_y1)] = _before
+                for (n, x, y) in _after:
+                    if x == b_x and y == b_y:
+                        n_m = n-b_n
+                if n_m>0:
+                    x_1, y_1, x_2, y_2 = b_x1, b_y1, b_x, b_y
+                else:
+                    x_1, y_1, x_2, y_2 = b_x, b_y, b_x1, b_y1
+            elif len(_before) == 1:
+                # this moved a full stacks
+                [(n_m, x_1, y_1)] = _before
+                [(_, x_2, y_2)] = list(_after)
+        else:
+            _before_positions = lists_to_tuples([[x, y] for (n, x, y) in _before])
+            _after_positions = lists_to_tuples([[x, y] for (n, x, y) in _after])
+
+            move_from = set(_before_positions).difference(_after_positions)
+            move_to = set(_after_positions).difference(_before_positions)
+
+            if move_to:
+                # move to some place new
+                [(x_2, y_2)] = move_to
+                for (n, x, y) in _after:
+                    if x == x_2 and y == y_2:
+                        n_m = n
+                    else:
+                        x_1, y_1 = x, y
+            elif move_from:
+                # move to an known place
+                [(x_1, y_1)] = move_from
+                for (n, x, y) in _before:
+                    if x == x_1 and y == y_1:
+                        n_m = n
+                    else:
+                        x_2, y_2 = x, y
+
+        return 'MOVE', n_m, (x_1, y_1), (x_2, y_2)
+        # print_move(n_m, x_1, y_1, x_2, y_2)
+
+    elif nex_pieces_num<cur_pieces_num:
+        # white become less, boomed
+        (_, x, y) = list(set(cur_pieces).difference(nex_pieces))[0]
+        # print_boom(x, y)
+        return 'BOOM', (x, y)
     else:
-        block_color = 0
-        self.black_turn_count +=1
-        self.turn = Board.Turn.WHITE
+        print("panic, growing number of whites")
+        return None
 
-    blocks = self.state[block_color]
-
-    stacks = self.state[color]

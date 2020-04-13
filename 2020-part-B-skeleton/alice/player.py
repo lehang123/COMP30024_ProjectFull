@@ -1,3 +1,5 @@
+from environment import Environment
+from utils import string_to_tuple
 
 class ExamplePlayer:
     def __init__(self, colour):
@@ -11,15 +13,8 @@ class ExamplePlayer:
         program will play as (White or Black). The value will be one of the
         strings "white" or "black" correspondingly.
         """
+        self.environment = Environment()
 
-        white_init = [[1, x, y] for x in range(0,8) for y in range(0,2) if (x != 2 and x != 5)]
-        black_init = [[1, x, y] for x in range(0,8) for y in range(6,8) if (x != 2 and x != 5)]
-        self.game_state = {'white': white_init, 'black': black_init}
-        self.colour = colour
-        if self.colour == 'white':
-            self.oppo = 'black'
-        else :
-            self.oppo = 'white'
 
     def action(self):
         """
@@ -37,8 +32,12 @@ class ExamplePlayer:
 
         # TODO: minimax and alpha beta pruning here
         action = input("It's your turn now, your action : ")
+        parts = action.split()
 
-        return ("BOOM", (0, 0))
+        if parts[0] == "MOVE":
+            return parts[0], int(parts[1]), string_to_tuple(parts[2]), string_to_tuple(parts[3])
+        else:
+            return parts[0], string_to_tuple(parts[1])
 
 
     def update(self, colour, action):
@@ -60,3 +59,10 @@ class ExamplePlayer:
         against the game rules).
         """
         # TODO: Update state representation in response to action.
+        if action[0] == 'MOVE':
+            (move, n, before, after) = action
+            action = (move, (n, before, after))
+
+        move = self.environment.get_move_from_command(action)
+        self.environment.make_move(move)
+

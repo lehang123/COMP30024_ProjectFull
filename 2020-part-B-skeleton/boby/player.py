@@ -1,3 +1,9 @@
+import environment
+from boby.td_leaf_agent import TdLeafAgent
+from boby.model import Model
+from boby.vectorize import characteristic_vectorize
+from utils import nodes_to_move
+
 class ExamplePlayer:
     def __init__(self, colour):
         """
@@ -10,15 +16,9 @@ class ExamplePlayer:
         program will play as (White or Black). The value will be one of the 
         strings "white" or "black" correspondingly.
         """
+        self.environment = environment.Environment()
+        self.agent = TdLeafAgent(Model(5, 20), self.environment, characteristic_vectorize)
 
-        white_init = [[1, x, y] for x in range(0,8) for y in range(0,2) if (x != 2 and x != 5)]
-        black_init = [[1, x, y] for x in range(0,8) for y in range(6,8) if (x != 2 and x != 5)]
-        self.game_state = {'white': white_init, 'black': black_init}
-        self.colour = colour
-        if self.colour == 'white':
-            self.oppo = 'black'
-        else :
-            self.oppo = 'white'
 
     def action(self):
         """
@@ -29,15 +29,10 @@ class ExamplePlayer:
         return an allowed action to play on this turn. The action must be
         represented based on the spec's instructions for representing actions.
         """
-        # TODO: Decide what action to take, and return it
+        move = self.agent.get_move()
+        command = nodes_to_move(self.environment.get_board(), move, self.environment.get_turn())
 
-        # make a all the possible actions that I can take
-        # actions = make_nodes(self.game_state, self.colour, self.oppo)
-
-        # TODO: minimax and alpha beta pruning here
-
-
-        return ("BOOM", (0, 0))
+        return command
 
 
     def update(self, colour, action):
@@ -58,4 +53,10 @@ class ExamplePlayer:
         for the player colour (your method does not need to validate the action
         against the game rules).
         """
-        # TODO: Update state representation in response to action.
+
+        if action[0] == 'MOVE':
+            (move, n, before, after) = action
+            action = (move, (n, before, after))
+
+        node = self.environment.get_move_from_command(action)
+        self.environment.make_move(node)

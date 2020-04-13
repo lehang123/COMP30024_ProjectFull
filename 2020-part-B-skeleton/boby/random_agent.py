@@ -7,7 +7,7 @@ class RandomAgent:
         self.env = env
 
     def get_move(self):
-        legal_moves = self.env.get_legal_moves()
+        legal_moves = self.env.get_legal_moves(include_boom=False)
         move = random.choice(legal_moves)
         return move
 
