@@ -506,3 +506,253 @@ def nodes_to_move(before, after, color):
         print("panic, growing number of whites")
         return None
 
+
+def make_goal(board, color):
+    """
+    find the best(closest) goal state on the board to be used in the search algorithm, goal in this game is to destroy all the
+    black pieces, so we are going to find all the possible positions that we can place whites and explode to finish the
+    goal
+
+    we defining the best goal is the closest, and we are using manhattan distance to calculate between distance
+
+    :param board: the board
+    :param color: the color we check for number of goal needed
+    """
+    stacks = board[color]
+
+    if stacks:
+        # get all the boom_zone for black
+        l = list(map(lambda x: x[1::], stacks))
+        boom_zones = boom_areas(stacks[0][1::], l.copy())
+
+        boom_keys = list(boom_zones.keys())
+        boom_dict = boom_zones_intersect(boom_zones, boom_keys[0], boom_keys[1::])
+
+        # find the minimum pieces required to destroy all blacks
+        goal_positions = []
+        find_positions(boom_zones, boom_dict, l, goal_positions)
+
+        return goal_positions
+    else:
+        return []
+
+
+def boom_areas(stack, stacks):
+    """
+    similar to boom_zone but now we check for chain reaction
+    @param stack: the stack that's going to explode
+    @param stacks: the rest of the stacks on the board
+    @return: all positions that are going to explode
+    """
+    bz = boom_zone(stack, True)
+    exploded = [stack]
+    p_bz = {}
+    for s in stacks:
+        if s in bz:
+            bz = merge_lists(bz, boom_zone(s, True))  # s exploded as well and expanded boom zone
+            exploded.append(s)
+
+    # remove those are already exploded
+    for e in exploded:
+        stacks.remove(e)
+    exploded += expand_bz(bz, stacks)
+    p_bz[lists_to_tuples(exploded)] = bz
+    if stacks:
+        p_bz.update(boom_areas(stacks[0], stacks.copy()))
+        return p_bz
+    else:
+        return p_bz
+
+
+def merge_lists(l1, l2):
+    """
+    merging of two list and remove duplicates
+    @param l1: list 1
+    @param l2: list 2
+    @return: merged list from l1 and l2 without duplicates
+    """
+    return l1 + [i for i in l2 if i not in l1]
+
+
+def expand_bz(bz, stacks):
+    """
+    try expanding bz as far as possible, helper for boom_area
+    @param bz: boom zone
+    @param stacks: the rest of the stacks on the board
+    @return: resulted boom position after expanding
+    """
+    keep_expand = False
+    exploded = []
+    for s in stacks:
+        if stacks in bz:
+            keep_expand = True  # expanded, might be new elements will be coming in
+            bz = merge_lists(bz, boom_zone(s, True))  # s exploded as well and expanded boom zone
+    for e in exploded:
+        stacks.remove(e)
+
+    if keep_expand:
+        return exploded + expand_bz(bz, stacks)
+    else:
+        return exploded
+
+
+def boom_zones_intersect(dic, keys_head, keys_rest):
+    """
+    we are trying to find the intersection of boom_zones as this will help us to know if we put a white pieces there,
+    it's going to boom multiple boom zone.
+
+    :param dic: the dictionary that contains all (pieces - boom_zones) pairs
+    :param keys_head: we listed all the keys from the dict, and this is the first key
+    :param keys_rest: the rest of the keys from the dict
+
+
+    :return the intersect dictionary with intersect position as key and the pieces that affected as value
+    (always one position : (two to many) pieces)
+    """
+    result = {}
+    if keys_rest:
+        hl1 = tuple(map(lambda x: tuple(x), dic[keys_head]))
+        for current_key in keys_rest:
+            hl2 = tuple(map(lambda x: tuple(x), dic[current_key]))
+            r = set(hl1).intersection(hl2)
+            if r:
+                # there is a intersection
+                for position in r:
+                    result[position] = result.get(position, ()) + (keys_head + current_key)
+
+        # continue to check for intersection
+        result_rest = boom_zones_intersect(dic, keys_rest[0], keys_rest[1::])
+
+        for key in result_rest:
+            val = result.get(key, ()) + result_rest[key]
+            result[key] = tuple(set(tuple(i) for i in val))
+
+    for key in list(result):
+        if not (0 <= key[0] <= 7 and 0 <= key[1] <= 7):
+            result.pop(key, None)
+    return result
+
+
+def find_positions(boom_zones, boom_dict, blocks, positions):
+    """
+    finding the winning position
+    :param boom_zones: the boom zone that affect the pieces (pieces: boom_zones)
+    :param boom_dict: the intersection between the boom_zones (intersect: effected pieces)
+    :param blocks: the blocks that whites can't step on
+    :param positions: the positions that chosen
+
+    :return the position that will placed to destroy all the blacks
+    """
+    boom_zones_queue = sorted([key for key in boom_zones], key=lambda t: len(t), reverse=True)
+    boom_dict_queue = sorted([(key, boom_dict[key]) for key in boom_dict], key=lambda t: len(t[1]), reverse=True)
+    max_boom_pieces = boom_zones_queue[0]
+
+    if boom_dict_queue:  # always pop intersection first
+        # the max_intersection that
+        max_inter_zones = boom_dict_queue[0]
+        # max_inter_zones positions
+        mizpos = max_inter_zones[0]
+        # max_inter_zones pieces
+        mizpis = max_inter_zones[1]
+
+        pop_boom_zones(mizpis, boom_zones)
+        pop_boom_dict(mizpis, boom_dict)
+
+        positions.append(list(mizpos))
+    else:
+        # take out the boom_zones
+        boom_positions = boom_zones.pop(max_boom_pieces, None)
+        for bp in boom_positions:
+            if 0 <= bp[0] <= 7 \
+                    and 0 <= bp[1] <= 7 \
+                    and bp not in blocks \
+                    and all(bp not in boom_zone(p) for p in positions):
+                positions.append(bp)
+                break
+
+        # take out the boom_dict
+        pop_boom_dict(max_boom_pieces, boom_dict)
+
+    if boom_zones:
+        find_positions(boom_zones, boom_dict, blocks, positions)
+
+
+def pop_boom_zones(pop_pieces, boom_zones):
+    """
+    to pop up the pieces from the boom_dict
+    :param pop_pieces: the pieces that need to be pop up
+    :param boom_zones: the boom_zones that pops
+    """
+
+    for p in list(boom_zones):
+        if set(p).intersection(pop_pieces):
+            boom_zones.pop(p, None)
+
+
+def pop_boom_dict(pop_pieces, boom_dict):
+    """
+    to pop up the pieces from the boom_dict
+    :param pop_pieces: the pieces that need to be pop up
+    :param boom_dict: the dict
+    """
+
+    for p in list(boom_dict):
+        left = [piece for piece in boom_dict[p] if piece not in pop_pieces]
+
+        if left:
+            boom_dict[p] = tuple(left)
+        else:
+            boom_dict.pop(p, None)
+
+
+def vulnerability_heuristics_score(board, color):
+    """
+
+    check for "vulnerability" of the color (how easy to get destroyed)
+
+    :param board: the current board
+    :param color: the color that checking for vulnerability
+
+    :return: the heuristics value for the color (the higher the better)
+
+    """
+
+    goal = make_goal(board, color)
+    oppo_color = 'white' if color == 'black' else 'black'
+
+    oppo_nodes = [[n, x, y] for n, x, y in board[oppo_color]]
+
+    # print("oppo nodes : " + str(oppo_nodes))
+
+    h = 0
+    for wp in goal:
+        d = 17
+        nearest_node = []
+        for node in oppo_nodes:
+            md = manhattan_distance(wp, node[1::])
+            if d > md:
+                nearest_node = node
+                d = md
+
+        if nearest_node:  # if there is a nearest node
+            d = float(d) / nearest_node[0]
+            nearest_node[0] -= 1
+            if nearest_node[0] == 0:
+                # print("del nn : " + str(nearest_node))
+                oppo_nodes.remove(nearest_node)
+        else:  # no node available, very safe, so we give high score
+            d = 17 # this is higher than the furthest manhattan distance
+        h += (d + 7) # gives safety point for separation
+
+    return h
+
+def manhattan_distance(p1, p2):
+    """
+    find the manhattan distance between 2 points
+    @param p1: point 1 position
+    @param p2: point 2 position
+    @return: the manhattan distance between the 2 points
+    """
+    x = abs(p1[0] - p2[0])
+    y = abs(p1[1] - p2[1])
+    return x + y

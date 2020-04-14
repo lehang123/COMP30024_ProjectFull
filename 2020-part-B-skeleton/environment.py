@@ -33,8 +33,8 @@ class Environment:
     def get_legal_moves(self, include_boom=True):
         return self.board.get_legal_moves(include_boom = include_boom)
 
-    def make_random_move(self):
-        moves = self.get_legal_moves(include_boom=False)
+    def make_random_move(self, include_boom=False):
+        moves = self.get_legal_moves(include_boom=include_boom)
 
         move_tups = []
         for move in moves:
@@ -44,6 +44,7 @@ class Environment:
 
         move = choice(move_tups)
         self.board.push(move)
+        return {'white': move[0], 'black': move[1]}
 
     def get_reward(self):
         """

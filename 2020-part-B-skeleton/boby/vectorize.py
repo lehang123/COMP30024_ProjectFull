@@ -1,5 +1,5 @@
 import numpy as np
-from utils import boom_zone
+from utils import boom_zone, vulnerability_heuristics_score
 
 def pieces_positions_vectorize(board, turn):
     """
@@ -51,11 +51,10 @@ def characteristic_vectorize(board, turn):
     """
     a simple vectorize method that keeping track on mobility, exchange ability, and pieces left
 
-    len of vector: 5 = 1 (white pieces left) - 1 (black pieces left) + 1 (white's mobility) - 1 (black's mobility)
+    len of vector: 7 = 1 (white pieces left) - 1 (black pieces left) + 1 (white's mobility) - 1 (black's mobility)
 
-                    + 1 (best exchange score)
+                    + 1 (best exchange score) + 1 (vulnerability score for white) - 1 (vulnerability score for black)
 
-                    to add:  distance
 
     the 64 len's position vector: from index 0 to 63, correspond to (0,0), (0,1), (0,2)... (7,7) on board
 
@@ -67,7 +66,7 @@ def characteristic_vectorize(board, turn):
     white_pieces = board['white']
     black_pieces = board['black']
 
-    characteristic_vector = np.zeros(5, dtype=int)
+    characteristic_vector = np.zeros(7, dtype=int)
 
     w_nums = 0
     b_nums = 0
@@ -109,6 +108,12 @@ def characteristic_vectorize(board, turn):
 
         return result
 
+    w_vhs = vulnerability_heuristics_score(board, 'white')
+    b_vhs = vulnerability_heuristics_score(board, 'black')
+    # since this score's maginitude will be much higher than the other 5,
+    #  we try to divide it by 10, so it gives an similar range to other's (seem like we don't need that)
+    # vhs /= 10.0
+
     if turn == 'white':
         seq = [exchange_nums(white_piece[1::], [], []) for white_piece in white_pieces]
         best_exchange_score = max(seq) if seq else -13
@@ -123,12 +128,14 @@ def characteristic_vectorize(board, turn):
     characteristic_vector[2] = white_mobility
     characteristic_vector[3] = -black_mobility
     characteristic_vector[4] = best_exchange_score
+    characteristic_vector[5] = w_vhs
+    characteristic_vector[6] = -b_vhs
 
     characteristic_vector = characteristic_vector.reshape(1, characteristic_vector.shape[0])
 
     characteristic_vector = np.divide(characteristic_vector, 100) # divide this by 100 so the tanh() would work
 
-
+    # print("c vector : " + str(characteristic_vector))
     return characteristic_vector
 
 

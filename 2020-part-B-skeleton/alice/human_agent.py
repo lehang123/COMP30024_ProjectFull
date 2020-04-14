@@ -12,8 +12,12 @@ class HumanAgent:
         # print(parts)
 
         if parts[0] == "MOVE":
+            while len(parts) != 4:
+                action = input("plz enter again, your action : ")
+                parts = action.split()
 
             command = parts[0], int(parts[1]), string_to_tuple(parts[2]), string_to_tuple(parts[3])
+
         else:
             command = parts[0], string_to_tuple(parts[1])
 

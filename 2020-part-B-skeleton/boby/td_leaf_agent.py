@@ -49,13 +49,11 @@ class TdLeafAgent:
 
         reward_sequence = []
 
-        is_converge = False
-
         lamda = 0.7
 
         self.env.reset()
 
-        feature_vector = self.vectorize_method(self.env.get_board(), self.env.board.turn)
+        feature_vector = self.vectorize_method(self.env.get_board(), self.env.get_turn())
 
         eval_value, grads = self.sess.run([self.model.value, self.grads],
                                                             feed_dict={self.model.feature_vector_: feature_vector})
@@ -72,15 +70,19 @@ class TdLeafAgent:
 
             # to prevent both agent doing the same move during training, we used some random move
             if np.random.rand() < epsilon:
-                self.env.make_random_move()
+                move = self.env.make_random_move(include_boom=False)
+                feature_vector = self.vectorize_method(move, self.env.get_turn())
+                # try the eval_function for the random move
+                eval_value = self.sess.run(self.model.value,
+                                            feed_dict={self.model.feature_vector_: feature_vector})
             else:
                 self.env.make_move(move)
+                feature_vector = self.vectorize_method(move, self.env.get_turn())
 
             reward = self.env.get_reward()
             if reward is not None:
                 break
 
-            feature_vector = self.vectorize_method(move, self.env.get_turn())
             grads = self.sess.run(self.grads,
                                   feed_dict={self.model.feature_vector_: feature_vector})
 
@@ -94,8 +96,6 @@ class TdLeafAgent:
         update = self.model.trainable_variables.assign(f)
         self.sess.run(update)
         print("trainable variable updated : " + str(self.model.trainable_variables.eval()))
-
-        return self.env.get_reward()
 
     def minimax_alphabeta(self, node, depth, α, β, maximizing, turn_to, with_move=False):
         """
@@ -131,6 +131,9 @@ class TdLeafAgent:
         move = None
 
         children = make_nodes(node, turn_to)
+
+
+
         next_turn = 'white' if turn_to == 'black' else 'black'
         if maximizing:
             value = float('-Infinity')
@@ -141,7 +144,7 @@ class TdLeafAgent:
                     value = new_value
                     move = child
                 # value = max(value, self.minimax_alphabeta(child, depth - 1, α, β, False))
-                show_move = nodes_to_move(node, child, 'white')
+                # show_move = nodes_to_move(node, child, 'white')
                 # print("maxing with value : " + str(new_value) + " with move : "  + str(show_move))
                 α = max(α, value)
                 if α >= β:
@@ -171,7 +174,7 @@ class TdLeafAgent:
 
         is_white_turn = self.env.get_turn() == 'white'
 
-        value, move = self.minimax_alphabeta(self.env.get_board(), 2, float('-Infinity'), float('Infinity'),
+        value, move = self.minimax_alphabeta(self.env.get_board(), 3, -1, 1,
                                              is_white_turn, self.env.get_turn(), with_move=True)
         if return_value:
             return  move, value
@@ -190,8 +193,25 @@ class TdLeafAgent:
         value = self.sess.run(self.model.value, feed_dict={self.model.feature_vector_: fv})
         return value
 
-    def sum_grads(self, learning_rate, lamda, seq, final_reward):
+    def load_weight(self, weight):
+        weight = np.array(weight)
+        weight = weight.reshape([weight.shape[0], 1])
+        assign_weight = self.model.trainable_variables.assign(weight)
+        self.sess.run(assign_weight)
+        print("trainable variable loaded : " + str(self.model.trainable_variables.eval()))
 
+    def sum_grads(self, learning_rate, lamda, seq, final_reward):
+        """
+        calculate gradients to update the weight for TD leaf
+
+        W := W + sum_of_grads
+
+        :param learning_rate: the learning rate
+        :param lamda: the lambda
+        :param seq: the observation sequence of the the game
+        :param final_reward:  the final reward
+        :return:
+        """
         ans = np.zeros(len(self.grads), dtype=float)
         end = len(seq)
 
@@ -219,6 +239,26 @@ class TdLeafAgent:
 
         ans = ans
         return learning_rate * ans
+
+    def filter(self, current_board, available_moves, turn):
+        """
+        to filter and sorted moves in order the improve our speed of
+            alpha beta pruning(hopefully)
+
+        :param current_board: the current board which we use to evaluate the current situation
+        :param available_moves: the move that we have so we can filter or sort in order the improve our speed of
+            alpha beta pruning
+        :param turn: who's turn is it
+        :return: the filtered moves
+        """
+
+        def sort_eval(move):
+            return self.eval_fun(move, turn)
+
+        sorted_moves = sorted(available_moves, key=sort_eval)
+
+
+
 
 
 # model = Model(28, 100)
