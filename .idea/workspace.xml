@@ -2,50 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2f77c44a-c594-4067-a017-7a4958758651" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/environment.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586569238.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586570034.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586570154.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586570243.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586570256.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586570354.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586570552.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586570565.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586572849.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586574137.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586575297.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586575329.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586577730.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586578041.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586578537.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586578550.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586578959.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/events.out.tfevents.1586579346.Gongs-MBP.modem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-1213.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-1213.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-1213.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-1611.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-1611.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-1611.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-2000.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-2000.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-2000.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-401.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-401.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-401.meta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-784.data-00000-of-00001" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-784.index" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/model.ckpt-784.meta" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/.idea/workspace.xml" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/alice/player.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/alice/player.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/checkpoint" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/checkpoint" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/graph.pbtxt" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/boby/log/td_leaf/graph.pbtxt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/player.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/boby/player.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/random_agent.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/boby/random_agent.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/alice/human_agent.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/alice/human_agent.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/td_leaf_agent.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/boby/td_leaf_agent.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/train.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/boby/train.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/boby/vectorize.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/boby/vectorize.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/environment.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/environment.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/play.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/play.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2020-part-B-skeleton/utils.py" afterPath="$PROJECT_DIR$/2020-part-B-skeleton/utils.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -60,7 +23,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="environment.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/2020-part-B-skeleton/environment.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -77,7 +40,7 @@
         <entry file="file://$PROJECT_DIR$/2020-part-B-skeleton/play.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
-              <caret line="5" column="10" lean-forward="true" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+              <caret line="5" column="10" lean-forward="false" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
               <folding />
             </state>
           </provider>
@@ -109,7 +72,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -138,6 +100,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -166,23 +129,23 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="974" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24954791" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24894515" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -207,8 +170,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/2020-part-B-skeleton/play.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/2020-part-B-skeleton/environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/2020-part-B-skeleton/play.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
-          <caret line="5" column="10" lean-forward="true" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+          <caret line="5" column="10" lean-forward="false" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
           <folding />
         </state>
       </provider>

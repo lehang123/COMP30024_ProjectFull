@@ -1,22 +1,26 @@
-import numpy as np
-import tensorflow as tf
 import time
 
-from utils import make_nodes, nodes_to_move
+import numpy as np
+import tensorflow as tf
+
+from book_of_moves import is_terrible_move
+from utils import make_nodes
 
 
 class TdLeafAgent:
 
-    def __init__(self, model, env, sess, vectorize_method):
+    def __init__(self, model, env, sess, vectorize_method, minimax_depth=2):
         """
 
         :param model: the train model
         :param env: the environment
         :param vectorize_method: the vectorize method for the features
+        :param minimax_depth: depth of the minmax search
         """
         self.model = model
         self.sess = sess
         self.env = env
+        self.minimax_depth = minimax_depth
 
         # episode_count to used for training
         self.episode_count = tf.train.get_or_create_global_step()
@@ -36,7 +40,7 @@ class TdLeafAgent:
 
         print("trainable variable : " + str(self.model.trainable_variables.eval()))
 
-    def train(self, epsilon, learning_rate=0.1):
+    def train(self, epsilon, learning_rate=0.1, against=None):
         """
         in self training, if the same agent playing against each other, both of them will do that exact same
         move, therefore, we need some epsilon value to let the agent choose to do some random move so it can learnt
@@ -44,6 +48,7 @@ class TdLeafAgent:
 
         :param epsilon: rand lower than epsilon, do random move
         :param learning_rate: the learning rate
+        :param agent that train against
         :return: None
         """
 
@@ -63,10 +68,11 @@ class TdLeafAgent:
         # training begin, playing with itself
         while True:
 
-            start = time.time()
+            if against is not None:
+                move = against.get_move()
+                self.env.make_move(move)
+
             move, eval_value = self.get_move(return_value=True)
-            end = time.time()
-            print("time taken  :" + str(end-start))
 
             # to prevent both agent doing the same move during training, we used some random move
             if np.random.rand() < epsilon:
@@ -96,6 +102,8 @@ class TdLeafAgent:
         update = self.model.trainable_variables.assign(f)
         self.sess.run(update)
         print("trainable variable updated : " + str(self.model.trainable_variables.eval()))
+
+        return reward
 
     def minimax_alphabeta(self, node, depth, α, β, maximizing, turn_to, with_move=False):
         """
@@ -128,15 +136,13 @@ class TdLeafAgent:
             else:
                 return value[0, 0] # the eval value of node
 
-        move = None
+        move = node
 
         children = make_nodes(node, turn_to)
-
-
-
+        children = self.filter(node, children, turn_to)
         next_turn = 'white' if turn_to == 'black' else 'black'
         if maximizing:
-            value = float('-Infinity')
+            value = -1.0
             # children = make_nodes(node, self.env.get_turn())
             for child in children:
                 new_value = self.minimax_alphabeta(child, depth - 1, α, β, False, next_turn)
@@ -151,7 +157,7 @@ class TdLeafAgent:
                     break  # (*β cut - off *)
 
         else:
-            value = float('Infinity')
+            value = 1.0
             # children = make_nodes(node, self.env.get_turn())
             for child in children:
                 new_value = self.minimax_alphabeta(child, depth - 1, α, β, True, next_turn)
@@ -171,11 +177,15 @@ class TdLeafAgent:
             return value
 
     def get_move(self, return_value=False):
+        start = time.time()
 
         is_white_turn = self.env.get_turn() == 'white'
 
-        value, move = self.minimax_alphabeta(self.env.get_board(), 3, -1, 1,
+        value, move = self.minimax_alphabeta(self.env.get_board(), self.minimax_depth, -1, 1,
                                              is_white_turn, self.env.get_turn(), with_move=True)
+
+        end = time.time()
+        print("time taken  :" + str(end - start))
         if return_value:
             return  move, value
         else:
@@ -252,18 +262,39 @@ class TdLeafAgent:
         :return: the filtered moves
         """
 
-        def sort_eval(move):
-            return self.eval_fun(move, turn)
+        # filter_list(available_moves, (lambda x : not is_terrible_move(current_board, x, turn)), [])
+        # before = len(available_moves)
+        available_moves = [x for x in available_moves if not is_terrible_move(current_board, x, turn)]
+        # after = len(available_moves)
 
-        sorted_moves = sorted(available_moves, key=sort_eval)
+        # print(before-after)
+
+        def sort_eval(eval_move):
+            return self.eval_fun(eval_move, turn)
+
+        # todo: make all boom action to the head of the moves as these are the most direct result to the score,
+        # todo:  so they most likely to filter others by alpha beta (does the sort function help us with this already)
+
+        """
+        sort moves by current evaluate function, if we have good ordering, we can prune more for the alpha beta,
+        since the difference from state the state is keeping to minial due to the TD lambda nature, I hope this is
+        a good enough approximation
+
+        note : sort does help in improving the alpha beta search, however, the sorting taking extra time, and
+         it's not a perfect eval_fun, so in total, it's not a very good improvement, I suspect that if we can improve
+         more for our eval_fun, this could get better as well.
+        """
+
+        # is_maximizing = turn == 'white'
+        # sorted_moves = sorted(available_moves, key=sort_eval, reverse=is_maximizing)
+
+        # """
+        #     we try to throw away some percentage of the move after the sort,
+        #     in order to look deeper, HAVE TO TURN THIS OFF WHILE TRAINING
+        # """
+        # curr_num = len(sorted_moves)
+        # keep_num = int(curr_num*0.3)
+        # sorted_moves = sorted_moves[0:keep_num]
 
 
-
-
-
-# model = Model(28, 100)
-# traces = [np.zeros(tvar.shape)
-#                   for tvar in model.trainable_variables]
-# for t in traces:
-#     print(t.shape)
-# print(len(traces))
+        return available_moves

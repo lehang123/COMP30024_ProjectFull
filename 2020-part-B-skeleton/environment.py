@@ -1,7 +1,9 @@
 from enum import Enum
 from random import choice
-from boby.vectorize import pieces_positions_vectorize
-from utils import tuples_to_lists, print_board, make_nodes, board_dict_to_tuple, boom, lists_to_tuples
+from utils import tuples_to_lists, print_board, make_nodes, board_dict_to_tuple, boom
+from boby.vectorize import ultimate_vectorize
+from alice.evaluate import prime_eval
+import numpy as np
 
 
 class Environment:
@@ -20,6 +22,12 @@ class Environment:
 
     def get_turn(self):
         return self.board.get_turn()
+
+    def get_white_turn_count(self):
+        return self.board.white_turn_count
+
+    def get_black_turn_count(self):
+        return self.board.black_turn_count
 
     def make_move(self, board_dict):
         """
@@ -43,7 +51,9 @@ class Environment:
             move_tups.append(tup)
 
         move = choice(move_tups)
+
         self.board.push(move)
+        print("I KNOW THIS LOOKS STUPID BUT THIS IS A RANDOM MOVE !!!")
         return {'white': move[0], 'black': move[1]}
 
     def get_reward(self):
@@ -61,7 +71,7 @@ class Environment:
         else:
             return None
 
-    def play(self, players):
+    def play(self, players, random_move=False):
         """
         simulating the play ground,
 
@@ -69,11 +79,17 @@ class Environment:
         :return: the reward (in here we always refer to white)
         """
         reward = self.get_reward()
-
+        self.reset()
         while reward is None:
+
             player = players[self.board.turn.value]
+
             move = player.get_move()
-            self.make_move(move)
+            if random_move and np.random.rand() < 0.1 :
+                self.make_random_move()
+            else:
+                self.make_move(move)
+
             reward = self.get_reward()
 
         return reward
@@ -146,6 +162,9 @@ class Environment:
             boom((1, boom_x, boom_y), boom_dict)
 
             return boom_dict
+
+    def show_board(self):
+        self.board.show_board()
 
 
 class Board:
@@ -248,11 +267,12 @@ class Board:
     def show_board(self):
         board_dict = {'white': tuples_to_lists(self.state[0]), 'black': tuples_to_lists(self.state[1])}
         print_board(board_dict)
+        print(board_dict)
         print("turn to: " + str(self.turn))
         print("game_result : " + str(self.game_result))
         print("white moved : " + str(self.white_turn_count))
         print("black moved : " + str(self.black_turn_count))
-        pieces_positions_vectorize(board_dict, self.get_turn())
+        # print("score v : " + str(prime_eval(board_dict, self.get_turn())))
 
     def get_result(self):
         """
@@ -262,7 +282,7 @@ class Board:
         return self.game_result
 
 # e = Environment()
-
+#
 # e.make_move(e.get_move_from_command(('MOVE', (1, (0, 0), (0, 1)))))
 # e.make_move(e.get_move_from_command(('MOVE', (1, (1, 6), (2, 6)))))
 # e.make_move(e.get_move_from_command(('MOVE', (1, (1, 0), (1, 1)))))

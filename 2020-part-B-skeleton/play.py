@@ -1,28 +1,22 @@
 from environment import Environment
 from boby.model import Model
-from boby.vectorize import characteristic_vectorize
+from boby.vectorize import characteristic_vectorize, pieces_positions_vectorize
 from boby.td_leaf_agent import TdLeafAgent
-from alice.human_agent import HumanAgent
-import tensorflow as tf
+from calro.human_agent import HumanAgent
+from alice.minimax_agent import MinimaxAgent
+from alice.evaluate import prime_eval, sort_eval
 import json
 
 def main():
-    log_dir = './boby/weight.json'
+
+    log_dir = './boby/weight_zero.json'
     env = Environment()
-    model = Model(7)
+    minimax_agent = MinimaxAgent(env, prime_eval, minimax_depth=4, sort_eval=prime_eval)
+    agent = HumanAgent(env)
+    env.show_board()
+    players = [agent, minimax_agent]
+    reward = env.play(players)
 
-    with open(log_dir) as file:
-        dic = json.load(file)
-        weight = dic['weight']
-        print("play weight : " + str(weight))
-        with tf.Session() as sess:
-            agent = TdLeafAgent(model, env, sess, characteristic_vectorize)
-            agent.load_weight(weight)
-
-            human = HumanAgent(env)
-
-            players = [agent, human]
-            env.play(players)
 
 
     # with tf.train.SingularMonitoredSession(checkpoint_dir=log_dir) as sess:

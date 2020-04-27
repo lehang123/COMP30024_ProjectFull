@@ -1,3 +1,5 @@
+import math
+import heapq
 
 
 def make_nodes(board, turn, include_boom=True):
@@ -176,11 +178,12 @@ def boom(origin, data):
         boom(piece, data)
 
 
-def boom_zone(stack, exclude_self=False):
+def boom_zone(stack, exclude_self=False, check_valid=False):
     """
     where is going to be affected after the stack exploded
     :param stack: the stack that's going to exploded
     :param exclude_self: return boom zone including current location ?
+    :param check_valid: check if it's valid
     :return all the affected zone
     """
     x, y = stack
@@ -188,11 +191,15 @@ def boom_zone(stack, exclude_self=False):
     # y = stack[1]
 
     if exclude_self:
-        return [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
-                [x + 1, y - 1]]
+        zone = [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
+         [x + 1, y - 1]]
     else:
-        return [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
+        zone = [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
                 [x + 1, y - 1]]
+
+    if check_valid:
+        zone = [z for z in zone if (0 <= z[0] <= 7) and (0 <= z[1] <= 7)]
+    return zone
 
 
 def update_nodes(oppo_nodes, action_stacks, stacks, nodes, index, me, oppo):
@@ -542,7 +549,7 @@ def boom_areas(stack, stacks):
     similar to boom_zone but now we check for chain reaction
     @param stack: the stack that's going to explode
     @param stacks: the rest of the stacks on the board
-    @return: all positions that are going to explode
+    @return: all positions that are going to explode {stacks: position to explode them}
     """
     bz = boom_zone(stack, True)
     exploded = [stack]
@@ -562,6 +569,147 @@ def boom_areas(stack, stacks):
         return p_bz
     else:
         return p_bz
+
+
+def clusters_count(stacks, num_clusters=0):
+    """
+    count number of cluster for stacks
+    :param stacks: the rest of the stacks
+    :param num_clusters: the cluster that is counted already
+    :return: the number of cluster
+    """
+
+    if not stacks:
+        return num_clusters
+
+    head = stacks[0]
+
+    ground_zero = boom_zone(head)
+    exploded = []
+
+    filter_list(stacks, (lambda x : x not in ground_zero), exploded)
+
+    for exp in exploded:
+        chain_explode(exp, stacks)
+
+    num_clusters += 1
+
+    return clusters_count(stacks, num_clusters)
+
+
+def chain_explode(exp, stacks):
+    """
+    simulate the chain explosion effect
+    :param exp: the one that exploded
+    :param stacks: the rest of the stack
+    """
+    ground_zero = boom_zone(exp)
+    exploded = []
+
+    filter_list(stacks, (lambda x: x not in ground_zero), exploded)
+
+    if exploded:
+        for exp in exploded:
+            chain_explode(exp, stacks)
+
+
+def get_clusters(stacks):
+    """
+    get cluster for stacks
+    :param stacks: don't put in reference
+    :return:
+    """
+    clusters = []
+    if not stacks:
+        return []
+
+    head = stacks[0][1::]
+    ground_zero = boom_zone(head)
+    exploded = []
+    filter_list(stacks, (lambda x : x[1::] not in ground_zero), exploded)
+    new_exploded = []
+    for exp in exploded:
+        new_exploded += chain_cluster(exp, stacks)
+
+    exploded += new_exploded
+    clusters.append(exploded)
+    return clusters + get_clusters(stacks)
+
+
+def chain_cluster(exp, stacks):
+
+    ground_zero = boom_zone(exp[1::])
+    exploded = []
+
+    filter_list(stacks, (lambda x: x[1::] not in ground_zero), exploded)
+
+    new_exploded = []
+    if exploded:
+        for exp in exploded:
+            new_exploded += chain_cluster(exp, stacks)
+    else:
+        return []
+    exploded += new_exploded
+    return exploded
+
+
+def filter_list(remains, func, discards):
+    """
+    to prevent delete strange behavior of deleting list while iterating,
+    this function is to help filter out list without breaking the rule to achieve that
+    :param remains: the remaining list
+    :param func: function to filter
+    :param discards: the discarded element
+    """
+    temp = []
+    while remains:
+        x = remains.pop()
+        if func(x):
+            temp.append(x)
+        else:
+            heapq.heappush(discards, x)
+            # discards.append(x)
+    while temp:
+        remains.append(temp.pop())
+
+
+def boom_affected(position, stacks):
+    """
+    when one position goes off, how would one party get affected
+    :param position: that position that goes off
+    :param stacks: the current stacks that might be affected (don't put reference in here)
+    :return: the affected pieces, a tuple(the directly affected pieces, pieces that die to chain explosion)
+    """
+
+    direct_affected = []
+    bz = boom_zone(position, check_valid=True)
+    filter_list(stacks, (lambda x: x[1::] not in bz), direct_affected)
+
+    indirect_affected = []
+    for stack in direct_affected:
+        indirect_affected += chain_cluster(stack, stacks)
+
+    return direct_affected, indirect_affected
+
+
+def cluster_boom_zone(position_cluster):
+    """
+    to find a boom zone for a cluster
+    :param position_cluster: the cluster we looking for [[x1, y1], [x2, y2]]
+    :return: the boom zone of tnat cluster
+    """
+
+    def valid_position(position):
+        return (0 <= position[0] <= 7) and (0 <= position[1] <= 7) and (position not in position_cluster)
+
+    cluster_bz = []
+
+    for position in position_cluster:
+        bz = boom_zone(position)
+        bz = [p for p in bz if valid_position(p)]
+        cluster_bz = merge_lists(cluster_bz, bz)
+
+    return cluster_bz
 
 
 def merge_lists(l1, l2):
@@ -587,6 +735,7 @@ def expand_bz(bz, stacks):
         if stacks in bz:
             keep_expand = True  # expanded, might be new elements will be coming in
             bz = merge_lists(bz, boom_zone(s, True))  # s exploded as well and expanded boom zone
+
     for e in exploded:
         stacks.remove(e)
 
@@ -689,6 +838,23 @@ def pop_boom_zones(pop_pieces, boom_zones):
             boom_zones.pop(p, None)
 
 
+def boom_affected_count(position, board, dic):
+    """
+    to see how many pieces is going to be affected if one poisition is exploded
+    :param position: position that blow off
+    :param board: the whole board, an array of stacks [('color', num, x, y)]
+    :param dic: that record the explosion {"s": 0, "b":0}
+    :return: the number of pieces that killed
+    """
+    bz = boom_zone(position, exclude_self=True, check_valid=True)
+    explodeds = []
+    filter_list(board, (lambda x: [x[2], x[3]] not in bz), explodeds)
+
+    for c, n, x, y in explodeds:
+        dic[c] += n
+        boom_affected_count((x, y), board, dic)
+
+
 def pop_boom_dict(pop_pieces, boom_dict):
     """
     to pop up the pieces from the boom_dict
@@ -705,54 +871,33 @@ def pop_boom_dict(pop_pieces, boom_dict):
             boom_dict.pop(p, None)
 
 
-def vulnerability_heuristics_score(board, color):
-    """
-
-    check for "vulnerability" of the color (how easy to get destroyed)
-
-    :param board: the current board
-    :param color: the color that checking for vulnerability
-
-    :return: the heuristics value for the color (the higher the better)
-
-    """
-
-    goal = make_goal(board, color)
-    oppo_color = 'white' if color == 'black' else 'black'
-
-    oppo_nodes = [[n, x, y] for n, x, y in board[oppo_color]]
-
-    # print("oppo nodes : " + str(oppo_nodes))
-
-    h = 0
-    for wp in goal:
-        d = 17
-        nearest_node = []
-        for node in oppo_nodes:
-            md = manhattan_distance(wp, node[1::])
-            if d > md:
-                nearest_node = node
-                d = md
-
-        if nearest_node:  # if there is a nearest node
-            d = float(d) / nearest_node[0]
-            nearest_node[0] -= 1
-            if nearest_node[0] == 0:
-                # print("del nn : " + str(nearest_node))
-                oppo_nodes.remove(nearest_node)
-        else:  # no node available, very safe, so we give high score
-            d = 17 # this is higher than the furthest manhattan distance
-        h += (d + 7) # gives safety point for separation
-
-    return h
-
-def manhattan_distance(p1, p2):
+def speedy_manhattan(position, stack):
     """
     find the manhattan distance between 2 points
-    @param p1: point 1 position
-    @param p2: point 2 position
+    @param position: destination
+    @param stack: stack that moving
     @return: the manhattan distance between the 2 points
     """
-    x = abs(p1[0] - p2[0])
-    y = abs(p1[1] - p2[1])
-    return x + y
+    step = stack[0]
+
+    x = abs(position[0]- stack[1])
+    y = abs(position[1] - stack[2])
+
+    y_step = math.ceil(y/float(step))
+    x_step = math.ceil(x/float(step))
+
+    ans = x_step + y_step
+    return ans
+
+
+dic = {'s':0, 'b':0}
+p = [2,1]
+board = {'white': [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [1, 6, 0], [1, 6, 1], [1, 7, 0], [1, 7, 1]],
+         'black': [[1, 0, 6], [1, 0, 7], [1, 1, 6], [1, 1, 7], [1, 3, 6], [1, 3, 7], [1, 4, 6], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]}
+stacks = board['white']
+blocks = board['black']
+all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
+
+boom_affected_count(p, all_pieces, dic)
+
+print(dic)

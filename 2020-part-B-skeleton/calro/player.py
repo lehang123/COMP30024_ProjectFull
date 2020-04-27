@@ -1,4 +1,4 @@
-import environment
+from environment import Environment
 from utils import string_to_tuple
 
 class ExamplePlayer:
@@ -13,7 +13,7 @@ class ExamplePlayer:
         program will play as (White or Black). The value will be one of the
         strings "white" or "black" correspondingly.
         """
-        self.environment = environment.Environment()
+        self.environment = Environment()
 
 
     def action(self):
@@ -65,4 +65,3 @@ class ExamplePlayer:
 
         move = self.environment.get_move_from_command(action)
         self.environment.make_move(move)
-
