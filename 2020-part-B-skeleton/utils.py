@@ -890,14 +890,14 @@ def speedy_manhattan(position, stack):
     return ans
 
 
-dic = {'s':0, 'b':0}
-p = [2,1]
-board = {'white': [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [1, 6, 0], [1, 6, 1], [1, 7, 0], [1, 7, 1]],
-         'black': [[1, 0, 6], [1, 0, 7], [1, 1, 6], [1, 1, 7], [1, 3, 6], [1, 3, 7], [1, 4, 6], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]}
-stacks = board['white']
-blocks = board['black']
-all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
-
-boom_affected_count(p, all_pieces, dic)
-
-print(dic)
+# dic = {'s':0, 'b':0}
+# p = [2,1]
+# board = {'white': [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [1, 6, 0], [1, 6, 1], [1, 7, 0], [1, 7, 1]],
+#          'black': [[1, 0, 6], [1, 0, 7], [1, 1, 6], [1, 1, 7], [1, 3, 6], [1, 3, 7], [1, 4, 6], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]}
+# stacks = board['white']
+# blocks = board['black']
+# all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
+#
+# boom_affected_count(p, all_pieces, dic)
+#
+# print(dic)

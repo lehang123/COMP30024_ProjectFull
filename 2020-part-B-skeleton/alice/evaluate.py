@@ -91,21 +91,24 @@ def prime_eval(board, next_turn):
     return board_score
 
 
-def sort_eval(board, next_turn):
+def mobility_eval(board, next_turn, is_soft=False):
     """
     a simple eval method that return the value for a current board
 
-    this is the first version
+    evaluate by mobility
 
-    :param previous_board: the board before move
     :param board: the board after move
     :param next_turn: the color that's going to move in this board configuration(the move after board)
+    :param is_soft: is it a soft eval so that I can speed things up
     :return: the value of the board
     """
     # current_turn = 'white' if next_turn == 'black' else 'black'
 
     white_stacks = board['white']
     black_stacks = board['black']
+
+    white_pieces_num = sum([n for n, x, y in white_stacks])
+    black_pieces_num = sum([n for n, x, y in black_stacks])
 
     if not white_stacks and black_stacks:
         return -1
@@ -114,36 +117,15 @@ def sort_eval(board, next_turn):
     if not black_stacks and not black_stacks:
         return 0
 
-    white_pieces_num = sum([n for n, x, y in white_stacks])
-    black_pieces_num = sum([n for n, x, y in black_stacks])
+    white_mobility_score = mobility_score(white_stacks, black_stacks, is_soft=is_soft)
+    black_mobility_score = mobility_score(black_stacks, white_stacks, is_soft=is_soft)
 
-    is_white_turn = (next_turn == "white")
+    final_score = 5*((white_pieces_num - black_pieces_num)/float(12)) + white_mobility_score - black_mobility_score
 
-    if len(white_stacks) == 1:
-        white_stacking_mean = white_stacks[0][0]
-        white_stacking_stdev = 0
-    else:
-        white_stacking_mean = mean([n if n < 8 else 8 for n, x, y in white_stacks])
-        white_stacking_stdev = stdev([n if n < 8 else 8 for n, x, y in white_stacks])
-
-    if len(black_stacks) == 1:
-        black_stacking_mean = black_stacks[0][0]
-        black_stacking_stdev = 0
-    else:
-        black_stacking_mean = mean([n if n<8 else 8 for n, x, y in black_stacks])
-        black_stacking_stdev = stdev([n if n<8 else 8 for n, x, y in black_stacks])
-
-    white_stacking_score = (5*white_stacking_mean) - white_stacking_stdev
-    black_stacking_score = (5*black_stacking_mean) - black_stacking_stdev
-
-    board_score = 2.0*((white_pieces_num/12.0) - (black_pieces_num/12.0)) \
-                  + (white_stacking_score/40.0) - (black_stacking_score/40.0)
-
-    board_score = tanh(board_score)
-    return board_score
+    return tanh(final_score)
 
 
-def mobility_score(stacks, blocks):
+def mobility_score(stacks, blocks, is_soft=False):
 
     all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
     block_positions = [(x, y) for n, x, y in blocks]
@@ -164,21 +146,30 @@ def mobility_score(stacks, blocks):
             ps += valid_positions(([x, y+i], [x, y-i], [x+i, y], [x-i, y]))
 
         for p in ps:
-            dic = {'s':0, 'b':0}
-            boom_affected_count(p, all_pieces.copy(), dic)
-            if dic['b'] != 0:
-                diff = dic['b']-dic['s']
-                # you can't move more than diff to that position, otherwise you will be losing more than b
-                points += diff
-            else:
+            if is_soft: # soft eval, take it easy
                 points += n
+            else:
+                dic = {'s':0, 'b':0}
+                boom_affected_count(p, all_pieces.copy(), dic)
+                # print(dic)
+                if dic['b'] != 0:
+                    diff = dic['b']-dic['s']
+
+                    # you can't move more than diff to that position, otherwise you will be losing more than b
+                    points += diff if diff>0 else 0
+                else:
+                    points += n
 
         return points
 
+    score = 0
+    for stack in stacks:
+        stack_score = mobile_test(stack)
+        # print("point for stack : " + str(stack) + " is " + str(stack_score))
+        score += stack_score
 
-
-
-
+    # 168 = 12 * 14, the maximum mobility of a party can have (one stack with 12 pieces)
+    return score/float(168)
 
 
 def cluster_safety(stacks, blocks, is_stack_turn):
@@ -252,9 +243,26 @@ def points_safety(stacks, blocks, is_stack_turn):
 # shortest_d will represent how many moves needed to go to your current location,
 #  you have to leave before they get to you, (and depends on who's turn next)
 
-# old_board = {'white': [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 4, 0], [2, 3, 3], [2, 6, 0], [2, 6, 1]],
-#              'black': [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7], [4, 1, 6]]}
-# print_board(old_board)
+old_board = {'white': [[1, 0, 0], [1, 1, 0], [2, 1, 1], [4, 4, 0], [4, 6, 1]],
+             'black': [[1, 0, 7], [1, 1, 7], [1, 3, 2], [1, 3, 7], [1, 4, 6], [1, 7, 7], [2, 6, 4], [4, 6, 7]]}
+#
+print_board(old_board)
+#
+print(mobility_eval(old_board, "white"))
+
+old_board = {'white': [[1, 0, 0], [1, 1, 0], [2, 1, 1], [4, 3, 1]],
+             'black': [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [5, 6, 6]]}
+#
+print_board(old_board)
+#
+print(mobility_eval(old_board, "white"))
+
+
+#
+# stacks = [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 4, 0], [2, 3, 3], [2, 6, 0], [2, 6, 1]]
+# blocks = [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7], [4, 1, 6]]
+#
+# print(mobility_score(blocks, stacks))
 # a = points_safety([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 4, 0], [2, 3, 3], [2, 6, 0], [2, 6, 1]],
 #                   [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7], [4, 1, 6]], True)
 #

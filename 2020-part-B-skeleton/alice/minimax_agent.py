@@ -2,8 +2,8 @@ from utils import make_nodes
 from book_of_moves import is_terrible_move, terrific_move
 import time
 
-class MinimaxAgent:
 
+class MinimaxAgent:
     def __init__(self, env, eval_fun, minimax_depth, sort_eval=None):
         self.env = env
         self.eval_fun = eval_fun
@@ -23,7 +23,7 @@ class MinimaxAgent:
 
         if not move:
             value, move = self.minimax_alphabeta(self.env.get_board(), self.minimax_depth, -1.0, 1.0,
-                                             is_white_turn, with_move=True)
+                                                 is_white_turn, with_move=True)
             print("value of this : " + str(value))
 
         end = time.time()
@@ -60,7 +60,7 @@ class MinimaxAgent:
             if with_move:
                 return value, node
             else:
-                return value # the eval value of node
+                return value  # the eval value of node
 
         move = node
 
@@ -71,7 +71,7 @@ class MinimaxAgent:
             # children = make_nodes(node, self.env.get_turn())
             for child in children:
                 new_value = self.minimax_alphabeta(child, depth - 1, α, β, False)
-                if new_value>=value:
+                if new_value >= value:
                     value = new_value
                     move = child
                 # value = max(value, self.minimax_alphabeta(child, depth - 1, α, β, False))
@@ -86,7 +86,7 @@ class MinimaxAgent:
             # children = make_nodes(node, self.env.get_turn())
             for child in children:
                 new_value = self.minimax_alphabeta(child, depth - 1, α, β, True)
-                if new_value<=value:
+                if new_value <= value:
                     value = new_value
                     move = child
                 # value = min(value, self.minimax_alphabeta(child, depth - 1, α, β, True))
@@ -122,7 +122,7 @@ class MinimaxAgent:
         # print(before-after)
 
         def eval_sort(eval_move):
-            return self.sort_eval(eval_move, turn)
+            return self.sort_eval(eval_move, turn, is_soft=True)
 
         # todo: make all boom action to the head of the moves as these are the most direct result to the score,
         # todo:  so they most likely to filter others by alpha beta (does the sort function help us with this already)
@@ -140,7 +140,4 @@ class MinimaxAgent:
         is_maximizing = turn == 'white'
         available_moves = sorted(available_moves, key=eval_sort, reverse=is_maximizing)
 
-
         return available_moves
-
-

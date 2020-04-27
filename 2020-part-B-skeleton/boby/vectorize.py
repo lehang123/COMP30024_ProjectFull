@@ -1,5 +1,5 @@
 import numpy as np
-from utils import boom_zone, vulnerability_heuristics_score, clusters_count, speedy_manhattan
+from utils import boom_zone, clusters_count, speedy_manhattan
 from statistics import stdev, mean
 
 def pieces_positions_vectorize(board, turn):
