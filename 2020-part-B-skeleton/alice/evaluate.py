@@ -1,6 +1,6 @@
 from statistics import stdev, mean
 from utils import get_clusters, speedy_manhattan, print_board,\
-    cluster_boom_zone, merge_lists, boom_zone, boom_affected, lists_to_tuples, boom_affected_count
+    cluster_boom_zone, merge_lists, boom_zone, boom_affected_num, lists_to_tuples, boom_affected_count
 from math import tanh
 
 position_scores = {(0, 7): 1.0, (7, 7): 1.0, (0, 0): 1.0, (7, 0): 1.0,
@@ -117,160 +117,99 @@ def mobility_eval(board, next_turn, is_soft=False):
     if not black_stacks and not black_stacks:
         return 0
 
-    white_mobility_score = mobility_score(white_stacks, black_stacks, is_soft=is_soft)
-    black_mobility_score = mobility_score(black_stacks, white_stacks, is_soft=is_soft)
+    white_control_score = control_score(white_stacks, is_soft=is_soft)
+    black_control_score = control_score(black_stacks, is_soft=is_soft)
 
-    final_score = 5*((white_pieces_num - black_pieces_num)/float(12)) + white_mobility_score - black_mobility_score
+    final_score = 5*((white_pieces_num - black_pieces_num)/float(12)) + white_control_score - black_control_score
 
     return tanh(final_score)
 
 
-def mobility_score(stacks, blocks, is_soft=False):
+def control_score(stacks, is_soft):
 
-    all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
-    block_positions = [(x, y) for n, x, y in blocks]
+    bzs = set()
+    for n, x, y in stacks:
+        boom_zones = lists_to_tuples(boom_zone([x, y], exclude_self=False, check_valid=True))
+        bzs = bzs.union(boom_zones)
 
-    def mobile_test(s):
-        n, x, y = s
-        points = 0
-        ps = []
+    if is_soft:
+        score = 0
+        for bz in bzs:
+            bzz = boom_zone(bz, False, True)
+            affected = 0
+            for stack in stacks:
+                if stack[1::] in bzz:
+                    affected += stack[0]
 
-        def is_valid_position(position):
-            x, y = position
-            return 0 <= x <= 7 and 0 <= y <= 7 and (x, y) not in block_positions
+            score += (12 - affected)
+    else:
+        score= sum([12-boom_affected_num(bz, stacks.copy()) for bz in bzs])
 
-        def valid_positions(positions):
-            return [p for p in positions if is_valid_position(p)]
-
-        for i in range(1, n+1):
-            ps += valid_positions(([x, y+i], [x, y-i], [x+i, y], [x-i, y]))
-
-        for p in ps:
-            if is_soft: # soft eval, take it easy
-                points += n
-            else:
-                dic = {'s':0, 'b':0}
-                boom_affected_count(p, all_pieces.copy(), dic)
-                # print(dic)
-                if dic['b'] != 0:
-                    diff = dic['b']-dic['s']
-
-                    # you can't move more than diff to that position, otherwise you will be losing more than b
-                    points += diff if diff>0 else 0
-                else:
-                    points += n
-
-        return points
-
-    score = 0
-    for stack in stacks:
-        stack_score = mobile_test(stack)
-        # print("point for stack : " + str(stack) + " is " + str(stack_score))
-        score += stack_score
-
-    # 168 = 12 * 14, the maximum mobility of a party can have (one stack with 12 pieces)
-    return score/float(168)
+    # full score 64*11 = 704
+    return score/float(704.0)
 
 
-def cluster_safety(stacks, blocks, is_stack_turn):
-
-    clusters = get_clusters(stacks[:])
-    safety_score = 0
-    for cluster in clusters:
-        cluster_positions = [s[1::] for s in cluster]
-        danger_area = cluster_boom_zone(cluster_positions)
-
-        shortest_d, position = 18, []
-        for pos in danger_area:
-            for b in blocks:
-                d = speedy_manhattan(pos, b)
-                shortest_d, position = (d, pos) if d < shortest_d else (shortest_d, position)
-
-        cluster_stacks = len(cluster)
-        cluster_pieces = sum([c[0] for c in cluster])
-
-        if is_stack_turn:
-            moving_room = float(shortest_d)/float(cluster_stacks)
-        else:
-            moving_room = float(shortest_d) / float(cluster_stacks)
-
-        moving_room = 1 if moving_room > 1 else moving_room
-
-        safety_score += cluster_pieces * moving_room
-
-    return safety_score
-
-
-def points_safety(stacks, blocks, is_stack_turn):
-    dangerous_points = set()
-    stacks_position = [s[1::] for s in stacks]
-    for stack in stacks:
-        dangerous_points = dangerous_points.union(set(lists_to_tuples(boom_zone(stack[1::], exclude_self=True, check_valid=True))))
-
-    print(dangerous_points)
-    dangerous_points = [[x, y] for x, y in dangerous_points if [x, y] not in stacks_position]
-
-    total_lose = []
-
-    for point in dangerous_points:
-        directly_affected, indirectly_affected = boom_affected(point, stacks)
-        total_affected = directly_affected + indirectly_affected
-        lta = len(total_affected)
-        lda = len(directly_affected)
-
-        if lda == 1 and not indirectly_affected and directly_affected[0][0]==1:
-            continue # those point are harmless
-
-        step_to_point = min([speedy_manhattan(point, b) for b in blocks])
-
-        if is_stack_turn:
-            step_to_point += 1 # since we can move first, we have 1 move advantage
-
-        if step_to_point >= 4: # those are a relatively safe so we don't care
-            continue
-
-        leave_behind = lda - step_to_point
-        if leave_behind > 0:
-            # that means something can't be moved in time,
-            # we try to lose the least, (noted: directly_affected is sorted)
-            lose_pieces = sum([p[0] for p in total_affected[:leave_behind]])
-
-            total_lose.append(lose_pieces)
-
-    return dangerous_points
+# def mobility_score(stacks, blocks, is_soft=False):
+#
+#     all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
+#     block_positions = [(x, y) for n, x, y in blocks]
+#
+#     def mobile_test(s):
+#         n, x, y = s
+#         points = 0
+#         ps = []
+#
+#         def is_valid_position(position):
+#             x, y = position
+#             return 0 <= x <= 7 and 0 <= y <= 7 and (x, y) not in block_positions
+#
+#         def valid_positions(positions):
+#             return [p for p in positions if is_valid_position(p)]
+#
+#         for i in range(1, n+1):
+#             ps += valid_positions(([x, y+i], [x, y-i], [x+i, y], [x-i, y]))
+#
+#         for p in ps:
+#             if is_soft: # soft eval, take it easy
+#                 points += n
+#             else:
+#                 dic = {'s':0, 'b':0}
+#                 boom_affected_count(p, all_pieces.copy(), dic)
+#                 # print(dic)
+#                 if dic['b'] != 0:
+#                     diff = dic['b']-dic['s']
+#
+#                     # you can't move more than diff to that position, otherwise you will be losing more than b
+#                     points += n if n < diff else (diff if diff > 0 else 0)
+#                 else:
+#                     points += n
+#
+#         return points
+#
+#     score = 0
+#     for stack in stacks:
+#         stack_score = mobile_test(stack)
+#         # print("point for stack : " + str(stack) + " is " + str(stack_score))
+#         score += stack_score
+#
+#     # 168 = 12 * 14, the maximum mobility of a party can have (one stack with 12 pieces)
+#     return score/float(168)
 
 
 # shortest_d will represent how many moves needed to go to your current location,
 #  you have to leave before they get to you, (and depends on who's turn next)
 
-old_board = {'white': [[1, 0, 0], [1, 1, 0], [2, 1, 1], [4, 4, 0], [4, 6, 1]],
-             'black': [[1, 0, 7], [1, 1, 7], [1, 3, 2], [1, 3, 7], [1, 4, 6], [1, 7, 7], [2, 6, 4], [4, 6, 7]]}
-#
-print_board(old_board)
-#
-print(mobility_eval(old_board, "white"))
-
-old_board = {'white': [[1, 0, 0], [1, 1, 0], [2, 1, 1], [4, 3, 1]],
-             'black': [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [5, 6, 6]]}
-#
-print_board(old_board)
-#
-print(mobility_eval(old_board, "white"))
-
-
-#
-# stacks = [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 4, 0], [2, 3, 3], [2, 6, 0], [2, 6, 1]]
-# blocks = [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7], [4, 1, 6]]
-#
-# print(mobility_score(blocks, stacks))
-# a = points_safety([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 4, 0], [2, 3, 3], [2, 6, 0], [2, 6, 1]],
-#                   [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7], [4, 1, 6]], True)
-#
-# print(a)
-#
-# # prime_eval(old_board, 'black')
-#
-# old_board = {'white': [[1, 0, 0], [1, 1, 0], [2, 1, 1], [1, 3, 0], [1, 4, 0], [2, 3, 3], [2, 6, 0], [2, 6, 1]], 'black': [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7], [4, 1, 6]]}
+# old_board = {'white': [[1, 0, 0], [1, 1, 0], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [2, 1, 1], [4, 6, 1]],
+#              'black': [[1, 0, 7], [1, 1, 7], [1, 3, 2], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [2, 6, 4], [3, 3, 6]]}
+# #
 # print_board(old_board)
+# #
+# print(control_score([[1, 0, 0], [1, 1, 0], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [2, 1, 1], [4, 6, 1]]))
 #
-# prime_eval(old_board, 'black')
+# old_board = {'white': [[1, 0, 0], [1, 1, 0], [2, 1, 1], [4, 3, 1]],
+#              'black': [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [5, 6, 6]]}
+# #
+# print_board(old_board)
+# #
+# print(mobility_eval(old_board, "white"))
+

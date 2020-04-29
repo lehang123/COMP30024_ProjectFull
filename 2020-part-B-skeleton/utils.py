@@ -673,23 +673,24 @@ def filter_list(remains, func, discards):
         remains.append(temp.pop())
 
 
-def boom_affected(position, stacks):
+def boom_affected_num(position, stacks):
     """
     when one position goes off, how would one party get affected
     :param position: that position that goes off
-    :param stacks: the current stacks that might be affected (don't put reference in here)
-    :return: the affected pieces, a tuple(the directly affected pieces, pieces that die to chain explosion)
+    :param stacks: the current stacks that might be affected
+    :return: the number of affected for one party
     """
+    x, y = position
+    total = 0
+    bz = boom_zone([x, y], exclude_self=False, check_valid=True)
 
-    direct_affected = []
-    bz = boom_zone(position, check_valid=True)
-    filter_list(stacks, (lambda x: x[1::] not in bz), direct_affected)
+    explodeds = []
+    filter_list(stacks, (lambda x: [x[1], x[2]] not in bz), explodeds)
 
-    indirect_affected = []
-    for stack in direct_affected:
-        indirect_affected += chain_cluster(stack, stacks)
+    for n, x, y in explodeds:
+        total += (boom_affected_num((x, y), stacks) + n)
 
-    return direct_affected, indirect_affected
+    return total
 
 
 def cluster_boom_zone(position_cluster):
@@ -846,7 +847,7 @@ def boom_affected_count(position, board, dic):
     :param dic: that record the explosion {"s": 0, "b":0}
     :return: the number of pieces that killed
     """
-    bz = boom_zone(position, exclude_self=True, check_valid=True)
+    bz = boom_zone(position, exclude_self=False, check_valid=True)
     explodeds = []
     filter_list(board, (lambda x: [x[2], x[3]] not in bz), explodeds)
 

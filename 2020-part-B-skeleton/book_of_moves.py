@@ -1,7 +1,7 @@
 """
 a "book" that keep record of tactics in game of Expendibots
 """
-from utils import lists_to_tuples, nodes_to_move, boom_zone, clusters_count, print_board
+from utils import lists_to_tuples, nodes_to_move, boom_zone, clusters_count, print_board, boom_affected_count
 
 def is_terrible_move(board, move, turn):
     """
@@ -40,7 +40,7 @@ def is_terrible_move(board, move, turn):
     for ofp in oppo_future_pieces:
         oppo_future_pieces_num += ofp[0]
 
-    ########### you lose more than your opponent  #############
+    ########### after BOOM you lose more than your opponent  #############
     bad_trade = (oppo_pieces_num - oppo_future_pieces_num) < (my_pieces_num - my_future_pieces_num)
 
     if bad_trade and (oppo_future_pieces_num != 0):
@@ -61,13 +61,24 @@ def is_terrible_move(board, move, turn):
         enemy_around_to = set(oppo_stacks_positions).intersection(move_to_boom_zones)
 
         move_from_num = 0
+
         for (n, x , y) in my_pieces:
             if (x, y) == move_from:
                 move_from_num = n
                 break
 
-        if not enemy_around_from and not enemy_around_to and (move_from_num != move_num):
-            # you separate stack not for killing or running away
+        dic = {'s':0, 'b':0}
+        all_pieces = [("s", n, x, y) for n, x, y in my_future_pieces] \
+                     + [("b", n, x, y) for n, x, y in oppo_future_pieces]
+        boom_affected_count(move_to, all_pieces, dic)
+        if dic['b'] != 0 and dic['s']>dic['b']:
+            # you moving to a place that will makes you die more
+            return True
+
+        move_more_than_one = (move_from_num != move_num)
+        if not enemy_around_from and not enemy_around_to and move_more_than_one:
+            # you separate stack more than one not for killing or running away
+            # todo: change to, if don't (kill) or (gain single stack control), wo don't separate
             return True
 
         if enemy_around_from and (move_from_num - move_num)>1 and not enemy_around_to:
