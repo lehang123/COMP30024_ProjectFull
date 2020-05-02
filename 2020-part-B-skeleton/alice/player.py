@@ -1,5 +1,8 @@
-import environment
-from utils import string_to_tuple
+from alice import environment
+from alice.evaluate import mobility_eval
+from alice.minimax_agent import MinimaxAgent
+from alice.utils import nodes_to_move
+
 
 class ExamplePlayer:
     def __init__(self, colour):
@@ -14,7 +17,7 @@ class ExamplePlayer:
         strings "white" or "black" correspondingly.
         """
         self.environment = environment.Environment()
-
+        self.agent = MinimaxAgent(self.environment, mobility_eval, minimax_depth=2, sort_eval=mobility_eval)
 
     def action(self):
         """
@@ -25,19 +28,11 @@ class ExamplePlayer:
         return an allowed action to play on this turn. The action must be
         represented based on the spec's instructions for representing actions.
         """
-        # TODO: Decide what action to take, and return it
 
-        # make a all the possible actions that I can take
-        # actions = make_nodes(self.game_state, self.colour, self.oppo)
+        move = self.agent.get_move()
+        command = nodes_to_move(self.environment.get_board(), move, self.environment.get_turn())
 
-        # TODO: minimax and alpha beta pruning here
-        action = input("It's your turn now, your action : ")
-        parts = action.split()
-
-        if parts[0] == "MOVE":
-            return parts[0], int(parts[1]), string_to_tuple(parts[2]), string_to_tuple(parts[3])
-        else:
-            return parts[0], string_to_tuple(parts[1])
+        return command
 
 
     def update(self, colour, action):
@@ -58,7 +53,6 @@ class ExamplePlayer:
         for the player colour (your method does not need to validate the action
         against the game rules).
         """
-        # TODO: Update state representation in response to action.
         if action[0] == 'MOVE':
             (move, n, before, after) = action
             action = (move, (n, before, after))

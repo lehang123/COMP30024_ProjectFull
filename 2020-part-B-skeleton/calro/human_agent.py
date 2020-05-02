@@ -1,12 +1,13 @@
-from utils import string_to_tuple, make_nodes
+from alice.utils import string_to_tuple
+
 
 class HumanAgent:
 
     def __init__(self, env):
         self.env = env
 
-
     def get_move(self):
+
         action = input("It's your turn now, your action : ")
         parts = action.split()
 

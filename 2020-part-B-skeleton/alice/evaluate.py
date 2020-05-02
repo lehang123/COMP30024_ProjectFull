@@ -1,94 +1,6 @@
-from statistics import stdev, mean
-from utils import get_clusters, speedy_manhattan, print_board,\
-    cluster_boom_zone, merge_lists, boom_zone, boom_affected_num, lists_to_tuples, boom_affected_count
 from math import tanh
-
-position_scores = {(0, 7): 1.0, (7, 7): 1.0, (0, 0): 1.0, (7, 0): 1.0,
-
-                  (0, 6): 2.0, (1, 7): 2.0, (7, 6): 2.0, (6, 7): 2.0,
-                  (1, 0): 2.0, (0, 1): 2.0, (6, 0): 2.0, (7, 1): 2.0,
-
-                  (5, 7): 3.0, (2, 7): 3.0, (7, 2): 3.0, (0, 2): 3.0,
-                  (6, 6): 3.0, (1, 6): 3.0, (6, 1): 3.0, (1, 1): 3.0,
-                  (7, 5): 3.0, (0, 5): 3.0, (5, 0): 3.0, (2, 0): 3.0,
-
-                  (4, 7): 4.0, (3, 7): 4.0, (0, 3): 4.0, (7, 3): 4.0,
-                  (7, 4): 4.0, (0, 4): 4.0, (3, 0): 4.0, (4, 0): 4.0,
-
-                  (4, 6): 5.0, (2, 6): 5.0, (1, 3): 5.0, (4, 1): 5.0,
-                  (5, 6): 5.0, (3, 6): 5.0, (1, 2): 5.0, (5, 1): 5.0,
-                  (6, 5): 5.0, (1, 5): 5.0, (2, 1): 5.0, (6, 2): 5.0,
-                  (6, 4): 5.0, (1, 4): 5.0, (3, 1): 5.0, (6, 3): 5.0,
-
-                  (4, 5): 6.0, (2, 5): 6.0, (2, 3): 6.0, (4, 2): 6.0,
-                  (5, 5): 6.0, (3, 5): 6.0, (2, 2): 6.0, (5, 2): 6.0,
-                  (5, 4): 6.0, (2, 4): 6.0, (3, 2): 6.0, (5, 3): 6.0,
-
-                  (3, 4): 7.0, (4, 4): 7.0, (3, 3): 7.0, (4, 3): 7.0}
-
-
-def prime_eval(board, next_turn):
-    """
-    a simple eval method that return the value for a current board
-
-    this is the first version
-
-    :param previous_board: the board before move
-    :param board: the board after move
-    :param next_turn: the color that's going to move in this board configuration(the move after board)
-    :return: the value of the board
-    """
-    # current_turn = 'white' if next_turn == 'black' else 'black'
-
-    white_stacks = board['white']
-    black_stacks = board['black']
-
-    if not white_stacks and black_stacks:
-        return -1
-    if not black_stacks and white_stacks:
-        return 1
-    if not black_stacks and not black_stacks:
-        return 0
-
-    white_pieces_num = sum([n for n, x, y in white_stacks])
-    black_pieces_num = sum([n for n, x, y in black_stacks])
-
-    is_white_turn = (next_turn == "white")
-
-    # white_cluster_safety = cluster_safety(white_stacks, black_stacks, is_white_turn)
-    # black_cluster_safety = cluster_safety(black_stacks, white_stacks, not is_white_turn)
-
-    if len(white_stacks) == 1:
-        white_stacking_mean = white_stacks[0][0]
-        white_stacking_stdev = 0
-    else:
-        white_stacking_mean = mean([n if n < 8 else 8 for n, x, y in white_stacks])
-        white_stacking_stdev = stdev([n if n < 8 else 8 for n, x, y in white_stacks])
-
-    if len(black_stacks) == 1:
-        black_stacking_mean = black_stacks[0][0]
-        black_stacking_stdev = 0
-    else:
-        black_stacking_mean = mean([n if n<8 else 8 for n, x, y in black_stacks])
-        black_stacking_stdev = stdev([n if n<8 else 8 for n, x, y in black_stacks])
-
-    white_stacking_score = (5*white_stacking_mean) - white_stacking_stdev
-    black_stacking_score = (5*black_stacking_mean) - black_stacking_stdev
-
-    board_score = 5.0*((white_pieces_num/12.0) - (black_pieces_num/12.0)) \
-                  + (white_stacking_score/40.0) - (black_stacking_score/40.0)
-                  # + ((white_cluster_safety/12.0) - (black_cluster_safety/12.0))
-
-    # print('pieces left : ' + str(2.0*((white_pieces_num/12.0) - (black_pieces_num/12.0))))
-    # print('stacking score : ' + str((white_stacking_score/40.0) - (black_stacking_score/40.0)))
-
-    # print("white cluster safety: " + str(white_cluster_safety))
-    # print("black cluster safety: " + str(black_cluster_safety))
-    # print('safety score : ' + str(((white_cluster_safety/12.0) - (black_cluster_safety/12.0))))
-
-    board_score = tanh(board_score)
-    # print('total score : ' + str(board_score))
-    return board_score
+from alice.utils import get_clusters, boom_zone, lists_to_tuples, make_goal,\
+    print_board, boom_affected_num, speedy_manhattan
 
 
 def mobility_eval(board, next_turn, is_soft=False):
@@ -117,94 +29,119 @@ def mobility_eval(board, next_turn, is_soft=False):
     if not black_stacks and not black_stacks:
         return 0
 
-    white_control_score = control_score(white_stacks, is_soft=is_soft)
-    black_control_score = control_score(black_stacks, is_soft=is_soft)
+    white_clusters = get_clusters(white_stacks.copy())
+    black_clusters = get_clusters(black_stacks.copy())
 
-    final_score = 5*((white_pieces_num - black_pieces_num)/float(12)) + white_control_score - black_control_score
+    white_clusters_bzs = []
+    black_clusters_bzs = []
+
+    white_control_score = control_score_fast(white_clusters, white_clusters_bzs, is_soft=is_soft)
+    black_control_score = control_score_fast(black_clusters, black_clusters_bzs, is_soft=is_soft)
+
+    white_choke_points = []
+    black_choke_points = []
+
+    get_choke_points(white_choke_points, white_clusters_bzs)
+    get_choke_points(black_choke_points, black_clusters_bzs)
+
+    white_choke_points_score = choke_points_score(white_choke_points, white_stacks, black_stacks, black_pieces_num)
+    black_choke_points_score = choke_points_score(black_choke_points, black_stacks, white_stacks, white_pieces_num)
+
+    # print(white_choke_points_score)
+    # print(black_choke_points_score)
+    #
+    # print(white_control_score)
+    # print(black_control_score)
+
+    final_score = 5*((white_pieces_num - black_pieces_num)/float(12))\
+                  + (white_control_score - black_control_score) + 2*(white_choke_points_score - black_choke_points_score)
 
     return tanh(final_score)
 
 
-def control_score(stacks, is_soft):
+def get_choke_points(choke_points, clusters_bzs):
+    dic = {}
+    for cluster_bzs in clusters_bzs:
+        for bz in cluster_bzs:
+            dic[bz] = dic.get(bz, 0) + 1
 
-    bzs = set()
-    for n, x, y in stacks:
-        boom_zones = lists_to_tuples(boom_zone([x, y], exclude_self=False, check_valid=True))
-        bzs = bzs.union(boom_zones)
+    max_occur = 0
+    max_occur_position = ()
 
-    if is_soft:
-        score = 0
-        for bz in bzs:
-            bzz = boom_zone(bz, False, True)
-            affected = 0
-            for stack in stacks:
-                if stack[1::] in bzz:
-                    affected += stack[0]
+    for key in dic:
+        occur = dic[key]
+        if occur > max_occur:
+            max_occur = occur
+            max_occur_position = key
 
-            score += (12 - affected)
-    else:
-        score= sum([12-boom_affected_num(bz, stacks.copy()) for bz in bzs])
+    choke_points.append(max_occur_position)
 
-    # full score 64*11 = 704
+    clusters_bzs = [cluster_bzs for cluster_bzs in clusters_bzs if max_occur_position not in cluster_bzs]
+
+    if clusters_bzs:
+        get_choke_points(choke_points, clusters_bzs)
+
+
+def choke_points_score(choke_points, stacks, blocks, blocks_num):
+    score = 0
+    if blocks_num < len(choke_points):
+        return 1.0
+    for cp in choke_points:
+
+        affected_num = boom_affected_num(cp, stacks.copy())
+
+        shortest = min([speedy_manhattan(cp, b) for b in blocks])
+
+        score += (12 - affected_num + 3*shortest)
+
+    # (7*3+11)*12
+    return score/float(372.0)
+
+
+def control_score_fast(clusters, cluster_bzs, is_soft=False):
+
+    p_dict = {}
+    stack_ps = []
+    for cluster in clusters:
+        cbz = set()
+        total = 0
+        for n, x, y in cluster:
+            total += n
+            stack_ps.append((x, y))
+            boom_zones = lists_to_tuples(boom_zone([x, y], exclude_self=False, check_valid=True))
+            cbz = cbz.union(boom_zones)
+
+        cbz = [b for b in cbz if b not in stack_ps]
+        cluster_bzs.append(cbz)
+        for c in cbz:
+            p_dict[c] = p_dict.get(c, 12) - total
+
+    score = 0
+    for key in p_dict:
+        score += p_dict[key]
     return score/float(704.0)
-
-
-# def mobility_score(stacks, blocks, is_soft=False):
-#
-#     all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
-#     block_positions = [(x, y) for n, x, y in blocks]
-#
-#     def mobile_test(s):
-#         n, x, y = s
-#         points = 0
-#         ps = []
-#
-#         def is_valid_position(position):
-#             x, y = position
-#             return 0 <= x <= 7 and 0 <= y <= 7 and (x, y) not in block_positions
-#
-#         def valid_positions(positions):
-#             return [p for p in positions if is_valid_position(p)]
-#
-#         for i in range(1, n+1):
-#             ps += valid_positions(([x, y+i], [x, y-i], [x+i, y], [x-i, y]))
-#
-#         for p in ps:
-#             if is_soft: # soft eval, take it easy
-#                 points += n
-#             else:
-#                 dic = {'s':0, 'b':0}
-#                 boom_affected_count(p, all_pieces.copy(), dic)
-#                 # print(dic)
-#                 if dic['b'] != 0:
-#                     diff = dic['b']-dic['s']
-#
-#                     # you can't move more than diff to that position, otherwise you will be losing more than b
-#                     points += n if n < diff else (diff if diff > 0 else 0)
-#                 else:
-#                     points += n
-#
-#         return points
-#
-#     score = 0
-#     for stack in stacks:
-#         stack_score = mobile_test(stack)
-#         # print("point for stack : " + str(stack) + " is " + str(stack_score))
-#         score += stack_score
-#
-#     # 168 = 12 * 14, the maximum mobility of a party can have (one stack with 12 pieces)
-#     return score/float(168)
 
 
 # shortest_d will represent how many moves needed to go to your current location,
 #  you have to leave before they get to you, (and depends on who's turn next)
 
-# old_board = {'white': [[1, 0, 0], [1, 1, 0], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [2, 1, 1], [4, 6, 1]],
-#              'black': [[1, 0, 7], [1, 1, 7], [1, 3, 2], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [2, 6, 4], [3, 3, 6]]}
-# #
+# old_board = {'white': [[1, 0, 0], [1, 1, 0], [1, 3, 0], [1, 4, 0], [2, 1, 1], [2, 3, 1], [2, 6, 0], [2, 6, 1]],
+#              'black': [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [2, 1, 6], [2, 3, 6], [2, 6, 4]]}
+#
 # print_board(old_board)
+#
+# mobility_eval(old_board, 'white')
+
 # #
-# print(control_score([[1, 0, 0], [1, 1, 0], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [2, 1, 1], [4, 6, 1]]))
+# start = time.time()
+# print(control_score([[1, 0, 7], [1, 1, 7], [1, 3, 2], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [2, 6, 4], [3, 3, 6]], is_soft=True))
+# end = time.time()
+# print((end-start))
+#
+# start = time.time()
+# print(control_score_1([[1, 0, 7], [1, 1, 7], [1, 3, 2], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [2, 6, 4], [3, 3, 6]]))
+# end = time.time()
+# print((end-start))
 #
 # old_board = {'white': [[1, 0, 0], [1, 1, 0], [2, 1, 1], [4, 3, 1]],
 #              'black': [[1, 0, 7], [1, 1, 7], [1, 3, 7], [1, 4, 7], [1, 6, 7], [1, 7, 7], [5, 6, 6]]}

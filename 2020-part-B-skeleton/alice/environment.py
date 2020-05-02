@@ -1,9 +1,9 @@
 from enum import Enum
 from random import choice
-from utils import tuples_to_lists, print_board, make_nodes, board_dict_to_tuple, boom
-from boby.vectorize import ultimate_vectorize
-from alice.evaluate import prime_eval
+
 import numpy as np
+
+from alice.utils import tuples_to_lists, print_board, make_nodes, board_dict_to_tuple, boom
 
 
 class Environment:
@@ -38,6 +38,24 @@ class Environment:
         move = tuple(sorted(whites)), tuple(sorted(blacks))
         self.board.push(move)
 
+    def get_white_num(self):
+        """
+        get number of whites left in the board
+        :return: num of tokens
+        """
+        state = self.board.state
+        white_num = sum([n for n, x, y in state[0]])
+        return white_num
+
+    def get_black_num(self):
+        """
+        get number of whites left in the board
+        :return: num of tokens
+        """
+        state = self.board.state
+        black_num = sum([n for n, x, y in state[1]])
+        return black_num
+
     def get_legal_moves(self, include_boom=True):
         return self.board.get_legal_moves(include_boom = include_boom)
 
@@ -53,7 +71,7 @@ class Environment:
         move = choice(move_tups)
 
         self.board.push(move)
-        print("I KNOW THIS LOOKS STUPID BUT THIS IS A RANDOM MOVE !!!")
+        # print("I KNOW THIS LOOKS STUPID BUT THIS IS A RANDOM MOVE !!!")
         return {'white': move[0], 'black': move[1]}
 
     def get_reward(self):
@@ -219,7 +237,7 @@ class Board:
             self.turn = Board.Turn.WHITE
 
         self.update_game()
-        self.show_board()
+        # self.show_board()
 
     def get_legal_moves(self, include_boom=True, turn_to_tuple=False):
         """
@@ -272,7 +290,6 @@ class Board:
         print("game_result : " + str(self.game_result))
         print("white moved : " + str(self.white_turn_count))
         print("black moved : " + str(self.black_turn_count))
-        # print("score v : " + str(prime_eval(board_dict, self.get_turn())))
 
     def get_result(self):
         """
@@ -280,33 +297,3 @@ class Board:
         :return: the result of the board (who wins or draws)
         """
         return self.game_result
-
-# e = Environment()
-#
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 0), (0, 1)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (1, 6), (2, 6)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (1, 0), (1, 1)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 7), (0, 6)))))
-# e.make_move(e.get_move_from_command(('MOVE', (2, (1, 1), (0, 1)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (6, 7), (5, 7)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 1), (0, 5)))))
-# e.make_move(e.get_move_from_command(('MOVE', (2, (0, 6), (1, 6)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 5), (0, 6)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (2, 6), (3, 6)))))
-
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 0), (0, 1)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 7), (0, 6)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 1), (0, 2)))))
-# e.make_move(e.get_move_from_command(('MOVE', (2, (0, 6), (0, 4)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 2), (0, 1)))))
-# e.make_move(e.get_move_from_command(('MOVE', (2, (0, 4), (0, 2)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 1), (1, 1)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (0, 2), (1, 2)))))
-# e.make_move(e.get_move_from_command(('MOVE', (1, (1, 1), (2, 1)))))
-
-
-
-# e = Environment()
-# b = e.board
-# for i in range(250):
-#     e.make_random_move()

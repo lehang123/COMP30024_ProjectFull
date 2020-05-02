@@ -1,6 +1,7 @@
-from utils import make_nodes
-from book_of_moves import is_terrible_move, terrific_move
 import time
+
+from alice.book_of_moves import is_terrible_move, terrific_move
+from alice.utils import make_nodes
 
 
 class MinimaxAgent:
@@ -11,7 +12,9 @@ class MinimaxAgent:
         self.sort_eval = sort_eval
 
     def get_move(self):
-        start = time.time()
+        # start = time.time()
+        white_num = self.env.get_white_num()
+        black_num = self.env.get_black_num()
 
         is_white_turn = self.env.get_turn() == 'white'
         if is_white_turn:
@@ -21,13 +24,22 @@ class MinimaxAgent:
 
         move = terrific_move(self.env.get_board(), self.env.get_turn(), turn_count)
 
-        if not move:
-            value, move = self.minimax_alphabeta(self.env.get_board(), self.minimax_depth, -1.0, 1.0,
-                                                 is_white_turn, with_move=True)
-            print("value of this : " + str(value))
+        search_depth = self.minimax_depth
+        total_token = (white_num+black_num)
 
-        end = time.time()
-        print("time taken  :" + str(end - start))
+        if 5 < total_token < 16:
+            search_depth = 3
+        elif 0 < total_token <= 5:
+            search_depth = 4
+
+        if not move:
+            value, move = self.minimax_alphabeta(self.env.get_board(), search_depth, -1.0, 1.0,
+                                                 is_white_turn, with_move=True)
+
+        # end = time.time()
+        # print("time taken  :" + str(end - start))
+        # print("white left : " + str(white_num))
+        # print("black left : " + str(black_num))
         return move
 
     def minimax_alphabeta(self, node, depth, α, β, maximizing, with_move=False):
@@ -49,7 +61,6 @@ class MinimaxAgent:
         if self.env.get_reward() is not None:
             value = self.env.get_reward()
 
-            # print("final v : " + str(value))
             if with_move:
                 return value, node
             else:
@@ -74,9 +85,6 @@ class MinimaxAgent:
                 if new_value >= value:
                     value = new_value
                     move = child
-                # value = max(value, self.minimax_alphabeta(child, depth - 1, α, β, False))
-                # show_move = nodes_to_move(node, child, 'white')
-                # print("maxing with value : " + str(new_value) + " with move : "  + str(show_move))
                 α = max(α, value)
                 if α >= β:
                     break  # (*β cut - off *)
@@ -89,9 +97,6 @@ class MinimaxAgent:
                 if new_value <= value:
                     value = new_value
                     move = child
-                # value = min(value, self.minimax_alphabeta(child, depth - 1, α, β, True))
-                # show_move = nodes_to_move(node, child, 'black')
-                # print("maxing with value : " + str(new_value) + "with move : " + str(show_move))
                 β = min(β, value)
                 if α >= β:
                     break  # (*α cut - off *)
@@ -113,19 +118,11 @@ class MinimaxAgent:
         :return: the filtered moves
         """
 
-        # filter_list(available_moves, (lambda x : not is_terrible_move(current_board, x, turn)), [])
         # before = len(available_moves)
         available_moves = [x for x in available_moves if not is_terrible_move(current_board, x, turn)]
 
-        # after = len(available_moves)
-
-        # print(before-after)
-
         def eval_sort(eval_move):
             return self.sort_eval(eval_move, turn, is_soft=True)
-
-        # todo: make all boom action to the head of the moves as these are the most direct result to the score,
-        # todo:  so they most likely to filter others by alpha beta (does the sort function help us with this already)
 
         """
         sort moves by current evaluate function, if we have good ordering, we can prune more for the alpha beta,

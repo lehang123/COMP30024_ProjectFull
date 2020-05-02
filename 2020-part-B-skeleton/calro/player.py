@@ -1,5 +1,5 @@
-from environment import Environment
-from utils import string_to_tuple
+from alice.environment import Environment
+from alice.utils import string_to_tuple
 
 class ExamplePlayer:
     def __init__(self, colour):
@@ -25,12 +25,7 @@ class ExamplePlayer:
         return an allowed action to play on this turn. The action must be
         represented based on the spec's instructions for representing actions.
         """
-        # TODO: Decide what action to take, and return it
 
-        # make a all the possible actions that I can take
-        # actions = make_nodes(self.game_state, self.colour, self.oppo)
-
-        # TODO: minimax and alpha beta pruning here
         action = input("It's your turn now, your action : ")
         parts = action.split()
 

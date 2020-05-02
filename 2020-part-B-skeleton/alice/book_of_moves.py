@@ -1,7 +1,7 @@
 """
 a "book" that keep record of tactics in game of Expendibots
 """
-from utils import lists_to_tuples, nodes_to_move, boom_zone, clusters_count, print_board, boom_affected_count
+from alice.utils import lists_to_tuples, nodes_to_move, boom_zone, clusters_count, boom_affected_count
 
 def is_terrible_move(board, move, turn):
     """
@@ -62,7 +62,7 @@ def is_terrible_move(board, move, turn):
 
         move_from_num = 0
 
-        for (n, x , y) in my_pieces:
+        for (n, x, y) in my_pieces:
             if (x, y) == move_from:
                 move_from_num = n
                 break
@@ -71,17 +71,15 @@ def is_terrible_move(board, move, turn):
         all_pieces = [("s", n, x, y) for n, x, y in my_future_pieces] \
                      + [("b", n, x, y) for n, x, y in oppo_future_pieces]
         boom_affected_count(move_to, all_pieces, dic)
-        if dic['b'] != 0 and dic['s']>dic['b']:
+        if dic['b'] != 0 and dic['s'] > dic['b']:
             # you moving to a place that will makes you die more
             return True
 
         move_more_than_one = (move_from_num != move_num)
         if not enemy_around_from and not enemy_around_to and move_more_than_one:
-            # you separate stack more than one not for killing or running away
-            # todo: change to, if don't (kill) or (gain single stack control), wo don't separate
             return True
 
-        if enemy_around_from and (move_from_num - move_num)>1 and not enemy_around_to:
+        if enemy_around_from and (move_from_num - move_num) > 1 and not enemy_around_to:
             # you running away and leave more than one piece
             return True
 
@@ -98,8 +96,8 @@ def is_terrible_move(board, move, turn):
 
             cluster_after = clusters_count(my_future_stacks_positions)
 
-            if cluster_after<cluster_before:
-                # you are creating chain explosion so your oppo can kill you much easier
+            if cluster_after<cluster_before and not enemy_around_from:
+                # you are creating chain explosion when you are not running from enemies
                 return True
     ######### END OF CASE #########
 
@@ -121,19 +119,29 @@ def terrific_move(board, turn, turn_num):
     blocks = board[oppo]
 
     if turn == "white":
-        if turn_num == 0:
+        if turn_num == 0 and sorted(board["white"]) == sorted([[1, 0, 0], [1, 0, 1], [1, 1, 0],
+                                              [1, 1, 1], [1, 3, 0], [1, 3, 1],
+                                              [1, 4, 0], [1, 4, 1], [1, 6, 0],
+                                              [1, 6, 1], [1, 7, 0], [1, 7, 1]]):
+
             board["white"] = [[1, 0, 0], [1, 1, 0], [1, 0, 1], [1, 1, 1],
                               [1, 3, 0], [1, 4, 0], [2, 3, 1],
                               [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]
 
             return board
-        elif turn_num == 1:
+        elif turn_num == 1 and sorted(board["white"]) == sorted([[1, 0, 0], [1, 1, 0], [1, 0, 1], [1, 1, 1],
+                                                    [1, 3, 0], [1, 4, 0], [2, 3, 1],
+                                                    [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]):
+
             board["white"] = [[1, 0, 0], [1, 1, 0], [2, 1, 1],
                               [1, 3, 0], [1, 4, 0], [2, 3, 1],
                               [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]
 
             return board
-        elif turn_num == 2:
+        elif turn_num == 2 and sorted(board["white"]) == sorted([[1, 0, 0], [1, 1, 0], [2, 1, 1],
+                                                    [1, 3, 0], [1, 4, 0], [2, 3, 1],
+                                                    [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]):
+
             board["white"] = [[1, 0, 0], [1, 1, 0], [2, 1, 1],
                               [1, 3, 0], [1, 4, 0], [2, 3, 1],
                               [1, 6, 0], [1, 7, 0], [2, 6, 1]]
@@ -142,19 +150,28 @@ def terrific_move(board, turn, turn_num):
         else:
             return None
     else:
-        if turn_num == 0:
+        if turn_num == 0 and sorted(board["black"]) == sorted([[1, 0, 6], [1, 0, 7], [1, 1, 6], [1, 1, 7],
+                                                [1, 3, 6], [1, 3, 7], [1, 4, 6], [1, 4, 7],
+                                                [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]):
+
             board["black"] = [[1, 0, 7], [1, 1, 7], [1, 0, 6], [1, 1, 6],
                               [1, 3, 7], [1, 4, 7], [2, 3, 6],
                               [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]
 
             return board
-        elif turn_num == 1:
+        elif turn_num == 1 and sorted(board["black"]) == sorted([[1, 0, 7], [1, 1, 7], [1, 0, 6], [1, 1, 6],
+                                                [1, 3, 7], [1, 4, 7], [2, 3, 6],
+                                                [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]):
+
             board["black"] = [[1, 0, 7], [1, 1, 7], [2, 1, 6],
                               [1, 3, 7], [1, 4, 7], [2, 3, 6],
                               [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]
 
             return board
-        elif turn_num == 2:
+        elif turn_num == 2 and sorted(board["black"]) == sorted([[1, 0, 7], [1, 1, 7], [2, 1, 6],
+                              [1, 3, 7], [1, 4, 7], [2, 3, 6],
+                              [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]):
+
             board["black"] = [[1, 0, 7], [1, 1, 7], [2, 1, 6],
                               [1, 3, 7], [1, 4, 7], [2, 3, 6],
                               [1, 6, 7], [1, 7, 7], [2, 6, 6]]

@@ -1,5 +1,4 @@
 import math
-import heapq
 
 
 def make_nodes(board, turn, include_boom=True):
@@ -187,8 +186,6 @@ def boom_zone(stack, exclude_self=False, check_valid=False):
     :return all the affected zone
     """
     x, y = stack
-    # x = stack[0]
-    # y = stack[1]
 
     if exclude_self:
         zone = [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
@@ -262,9 +259,8 @@ def tuples_to_lists(tuples):
     else:
         return tuples
 
-def first_max(tup1, tup2):
-    return tup1 if tup1[0]>=tup2[0] else tup2
-
+# def first_max(tup1, tup2):
+#     return tup1 if tup1[0]>=tup2[0] else tup2
 
 
 def print_board(board_dict, message="", unicode=False, compact=True, **kwargs):
@@ -510,7 +506,7 @@ def nodes_to_move(before, after, color):
         # print_boom(x, y)
         return 'BOOM', (x, y)
     else:
-        print("panic, growing number of whites")
+        # print("panic, growing number of whites")
         return None
 
 
@@ -617,7 +613,7 @@ def get_clusters(stacks):
     """
     get cluster for stacks
     :param stacks: don't put in reference
-    :return:
+    :return: the cluster you have
     """
     clusters = []
     if not stacks:
@@ -667,8 +663,8 @@ def filter_list(remains, func, discards):
         if func(x):
             temp.append(x)
         else:
-            heapq.heappush(discards, x)
-            # discards.append(x)
+            # heapq.heappush(discards, x)
+            discards.append(x)
     while temp:
         remains.append(temp.pop())
 
@@ -841,7 +837,7 @@ def pop_boom_zones(pop_pieces, boom_zones):
 
 def boom_affected_count(position, board, dic):
     """
-    to see how many pieces is going to be affected if one poisition is exploded
+    to see how many pieces is going to be affected if one position is exploded
     :param position: position that blow off
     :param board: the whole board, an array of stacks [('color', num, x, y)]
     :param dic: that record the explosion {"s": 0, "b":0}
@@ -889,16 +885,3 @@ def speedy_manhattan(position, stack):
 
     ans = x_step + y_step
     return ans
-
-
-# dic = {'s':0, 'b':0}
-# p = [2,1]
-# board = {'white': [[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1], [1, 3, 0], [1, 3, 1], [1, 4, 0], [1, 4, 1], [1, 6, 0], [1, 6, 1], [1, 7, 0], [1, 7, 1]],
-#          'black': [[1, 0, 6], [1, 0, 7], [1, 1, 6], [1, 1, 7], [1, 3, 6], [1, 3, 7], [1, 4, 6], [1, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]}
-# stacks = board['white']
-# blocks = board['black']
-# all_pieces = [("s", n, x, y) for n, x, y in stacks] + [("b", n, x, y) for n, x, y in blocks]
-#
-# boom_affected_count(p, all_pieces, dic)
-#
-# print(dic)
