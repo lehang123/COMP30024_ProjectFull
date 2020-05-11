@@ -1,7 +1,7 @@
 """
 a "book" that keep record of tactics in game of Expendibots
 """
-from alice.utils import lists_to_tuples, nodes_to_move, boom_zone, clusters_count, boom_affected_count
+from teamProject.utils import lists_to_tuples, nodes_to_move, boom_zone, clusters_count, boom_affected_count
 
 def is_terrible_move(board, move, turn):
     """

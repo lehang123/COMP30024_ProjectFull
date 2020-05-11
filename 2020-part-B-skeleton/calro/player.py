@@ -1,5 +1,5 @@
-from alice.environment import Environment
-from alice.utils import string_to_tuple
+from teamProject.environment import Environment
+from teamProject.utils import string_to_tuple
 
 class ExamplePlayer:
     def __init__(self, colour):

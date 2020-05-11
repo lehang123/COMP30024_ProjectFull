@@ -1,7 +1,7 @@
 import time
 
-from alice.book_of_moves import is_terrible_move, terrific_move
-from alice.utils import make_nodes
+from teamProject.book_of_moves import is_terrible_move, terrific_move
+from teamProject.utils import make_nodes
 
 
 class MinimaxAgent:
@@ -36,10 +36,6 @@ class MinimaxAgent:
             value, move = self.minimax_alphabeta(self.env.get_board(), search_depth, -1.0, 1.0,
                                                  is_white_turn, with_move=True)
 
-        # end = time.time()
-        # print("time taken  :" + str(end - start))
-        # print("white left : " + str(white_num))
-        # print("black left : " + str(black_num))
         return move
 
     def minimax_alphabeta(self, node, depth, α, β, maximizing, with_move=False):
@@ -117,8 +113,6 @@ class MinimaxAgent:
         :param turn: who's turn is it
         :return: the filtered moves
         """
-
-        # before = len(available_moves)
         available_moves = [x for x in available_moves if not is_terrible_move(current_board, x, turn)]
 
         def eval_sort(eval_move):

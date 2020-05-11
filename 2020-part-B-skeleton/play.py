@@ -1,6 +1,6 @@
-from alice.environment import Environment
-from alice.evaluate import mobility_eval
-from alice.minimax_agent import MinimaxAgent
+from teamProject.environment import Environment
+from teamProject.evaluate import mobility_eval
+from teamProject.minimax_agent import MinimaxAgent
 from calro.human_agent import HumanAgent
 from calro.random_agent import RandomAgent
 

@@ -3,7 +3,7 @@ from random import choice
 
 import numpy as np
 
-from alice.utils import tuples_to_lists, print_board, make_nodes, board_dict_to_tuple, boom
+from teamProject.utils import tuples_to_lists, print_board, make_nodes, board_dict_to_tuple, boom
 
 
 class Environment:
@@ -176,7 +176,7 @@ class Environment:
             assert 0 <= boom_x <= 7 and 0 <= boom_x <= 7 and ((boom_x, boom_y) in [s[1::] for s in stacks])
             boom_dict = {color_dict[color]: tuples_to_lists(stacks), color_dict[block_color]:tuples_to_lists(blocks)}
 
-            # boom action, the 1 just an placeholder, doesn't matter
+            # boom action, the 1 is just an placeholder, doesn't matter
             boom((1, boom_x, boom_y), boom_dict)
 
             return boom_dict

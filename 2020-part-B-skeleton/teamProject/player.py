@@ -1,7 +1,7 @@
-from alice import environment
-from alice.evaluate import mobility_eval
-from alice.minimax_agent import MinimaxAgent
-from alice.utils import nodes_to_move
+from teamProject import environment
+from teamProject.evaluate import mobility_eval
+from teamProject.minimax_agent import MinimaxAgent
+from teamProject.utils import nodes_to_move
 
 
 class ExamplePlayer:

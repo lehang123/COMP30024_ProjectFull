@@ -1,4 +1,4 @@
-from alice.utils import string_to_tuple
+from teamProject.utils import string_to_tuple
 
 
 class HumanAgent:
