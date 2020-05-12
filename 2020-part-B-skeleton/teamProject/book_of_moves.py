@@ -3,6 +3,7 @@ a "book" that keep record of tactics in game of Expendibots
 """
 from teamProject.utils import lists_to_tuples, nodes_to_move, boom_zone, clusters_count, boom_affected_count
 
+
 def is_terrible_move(board, move, turn):
     """
     these are the terrible moves, you should NEVER CONSIDER IT
@@ -21,7 +22,6 @@ def is_terrible_move(board, move, turn):
     my_stacks_num = len(my_pieces)
     for mp in my_pieces:
         my_pieces_num += mp[0]
-
 
     oppo_pieces_num = 0
     oppo_stacks_num = len(oppo_pieces)
@@ -67,12 +67,12 @@ def is_terrible_move(board, move, turn):
                 move_from_num = n
                 break
 
-        dic = {'s':0, 'b':0}
+        dic = {'s': 0, 'b': 0}
         all_pieces = [("s", n, x, y) for n, x, y in my_future_pieces] \
                      + [("b", n, x, y) for n, x, y in oppo_future_pieces]
         boom_affected_count(move_to, all_pieces, dic)
         if dic['b'] != 0 and dic['s'] > dic['b']:
-            # you moving to a place that will makes you die more
+            # you move to a place that will makes you die more
             return True
 
         move_more_than_one = (move_from_num != move_num)
@@ -96,7 +96,7 @@ def is_terrible_move(board, move, turn):
 
             cluster_after = clusters_count(my_future_stacks_positions)
 
-            if cluster_after<cluster_before and not enemy_around_from:
+            if cluster_after < cluster_before and not enemy_around_from:
                 # you are creating chain explosion when you are not running from enemies
                 return True
     ######### END OF CASE #########
@@ -120,9 +120,9 @@ def terrific_move(board, turn, turn_num):
 
     if turn == "white":
         if turn_num == 0 and sorted(board["white"]) == sorted([[1, 0, 0], [1, 0, 1], [1, 1, 0],
-                                              [1, 1, 1], [1, 3, 0], [1, 3, 1],
-                                              [1, 4, 0], [1, 4, 1], [1, 6, 0],
-                                              [1, 6, 1], [1, 7, 0], [1, 7, 1]]):
+                                                               [1, 1, 1], [1, 3, 0], [1, 3, 1],
+                                                               [1, 4, 0], [1, 4, 1], [1, 6, 0],
+                                                               [1, 6, 1], [1, 7, 0], [1, 7, 1]]):
 
             board["white"] = [[1, 0, 0], [1, 1, 0], [1, 0, 1], [1, 1, 1],
                               [1, 3, 0], [1, 4, 0], [2, 3, 1],
@@ -130,8 +130,8 @@ def terrific_move(board, turn, turn_num):
 
             return board
         elif turn_num == 1 and sorted(board["white"]) == sorted([[1, 0, 0], [1, 1, 0], [1, 0, 1], [1, 1, 1],
-                                                    [1, 3, 0], [1, 4, 0], [2, 3, 1],
-                                                    [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]):
+                                                                 [1, 3, 0], [1, 4, 0], [2, 3, 1],
+                                                                 [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]):
 
             board["white"] = [[1, 0, 0], [1, 1, 0], [2, 1, 1],
                               [1, 3, 0], [1, 4, 0], [2, 3, 1],
@@ -139,8 +139,8 @@ def terrific_move(board, turn, turn_num):
 
             return board
         elif turn_num == 2 and sorted(board["white"]) == sorted([[1, 0, 0], [1, 1, 0], [2, 1, 1],
-                                                    [1, 3, 0], [1, 4, 0], [2, 3, 1],
-                                                    [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]):
+                                                                 [1, 3, 0], [1, 4, 0], [2, 3, 1],
+                                                                 [1, 6, 0], [1, 7, 0], [1, 6, 1], [1, 7, 1]]):
 
             board["white"] = [[1, 0, 0], [1, 1, 0], [2, 1, 1],
                               [1, 3, 0], [1, 4, 0], [2, 3, 1],
@@ -151,8 +151,8 @@ def terrific_move(board, turn, turn_num):
             return None
     else:
         if turn_num == 0 and sorted(board["black"]) == sorted([[1, 0, 6], [1, 0, 7], [1, 1, 6], [1, 1, 7],
-                                                [1, 3, 6], [1, 3, 7], [1, 4, 6], [1, 4, 7],
-                                                [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]):
+                                                               [1, 3, 6], [1, 3, 7], [1, 4, 6], [1, 4, 7],
+                                                               [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]):
 
             board["black"] = [[1, 0, 7], [1, 1, 7], [1, 0, 6], [1, 1, 6],
                               [1, 3, 7], [1, 4, 7], [2, 3, 6],
@@ -160,8 +160,8 @@ def terrific_move(board, turn, turn_num):
 
             return board
         elif turn_num == 1 and sorted(board["black"]) == sorted([[1, 0, 7], [1, 1, 7], [1, 0, 6], [1, 1, 6],
-                                                [1, 3, 7], [1, 4, 7], [2, 3, 6],
-                                                [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]):
+                                                                 [1, 3, 7], [1, 4, 7], [2, 3, 6],
+                                                                 [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]):
 
             board["black"] = [[1, 0, 7], [1, 1, 7], [2, 1, 6],
                               [1, 3, 7], [1, 4, 7], [2, 3, 6],
@@ -169,8 +169,8 @@ def terrific_move(board, turn, turn_num):
 
             return board
         elif turn_num == 2 and sorted(board["black"]) == sorted([[1, 0, 7], [1, 1, 7], [2, 1, 6],
-                              [1, 3, 7], [1, 4, 7], [2, 3, 6],
-                              [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]):
+                                                                 [1, 3, 7], [1, 4, 7], [2, 3, 6],
+                                                                 [1, 6, 7], [1, 7, 7], [1, 6, 6], [1, 7, 6]]):
 
             board["black"] = [[1, 0, 7], [1, 1, 7], [2, 1, 6],
                               [1, 3, 7], [1, 4, 7], [2, 3, 6],
@@ -179,13 +179,3 @@ def terrific_move(board, turn, turn_num):
             return board
         else:
             return None
-
-
-# now = {'white':[[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 3, 0], [1, 3, 1], [1, 4, 0], [3, 4, 1], [1, 6, 0], [1, 7, 0], [1, 1, 5]],
-#        'black':[[1, 0, 6], [1, 0, 7], [1, 1, 6], [1, 1, 7], [2, 3, 6], [2, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]}
-# print_board(now)
-# future = {'white':[[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 3, 0], [1, 3, 1], [1, 4, 0], [3, 4, 1], [1, 6, 0], [1, 7, 0]],
-#        'black':[[2, 3, 6], [2, 4, 7], [1, 6, 6], [1, 6, 7], [1, 7, 6], [1, 7, 7]]}
-# print_board(future)
-# #
-# print(is_terrible_move(now, future, 'white'))

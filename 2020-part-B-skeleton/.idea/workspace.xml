@@ -2,20 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7bd3a8be-4d4b-41ae-a597-b3de7b7d82c2" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/2020-part-B-skeleton.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/2020-part-B-skeleton.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alice/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alice/book_of_moves.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/book_of_moves.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alice/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/environment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alice/evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/evaluate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alice/minimax_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/minimax_agent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alice/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alice/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/calro/human_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/calro/human_agent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/calro/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/calro/player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/play.py" beforeDir="false" afterPath="$PROJECT_DIR$/play.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teamProject/book_of_moves.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/book_of_moves.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teamProject/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/environment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teamProject/evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/evaluate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teamProject/minimax_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/minimax_agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teamProject/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/player.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teamProject/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,40 +27,6 @@
         <option value="Python Script" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>episode_count</find>
-      <find>game result 1:</find>
-      <find>episode_count :</find>
-      <find>game result</find>
-      <find>Result.D</find>
-      <find>game_result :</find>
-      <find>.get</find>
-      <find>game result :</find>
-      <find>Inf</find>
-      <find>se</find>
-      <find>game re</find>
-      <find>bad move :</find>
-      <find>this is bad for</find>
-      <find>utils</find>
-      <find>clusters_count</find>
-      <find>game</find>
-      <find>stacks_explode_zoom</find>
-      <find>.remove</find>
-      <find>print(</find>
-      <find>boom_affected_count</find>
-      <find>value of this :</find>
-      <find>get_clusters</find>
-      <find>clusters</find>
-      <find>boom_a</find>
-      <find>boom_area</find>
-      <find>start</find>
-      <find>print</find>
-      <find>make_g</find>
-      <find>np.</find>
-      <find>prin</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -267,9 +229,29 @@
       <screen x="0" y="23" width="1920" height="1022" />
     </state>
     <state x="424" y="196" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1022@0.23.1920.1022" timestamp="1589207905173" />
-    <state x="637" y="366" key="com.intellij.ide.util.TipDialog" timestamp="1589177645757">
+    <state width="1899" height="2" key="GridCell.Tab.0.bottom" timestamp="1589213852694">
       <screen x="0" y="23" width="1920" height="1022" />
     </state>
-    <state x="637" y="366" key="com.intellij.ide.util.TipDialog/0.23.1920.1022@0.23.1920.1022" timestamp="1589177645757" />
+    <state width="1899" height="2" key="GridCell.Tab.0.bottom/0.23.1920.1022@0.23.1920.1022" timestamp="1589213852694" />
+    <state width="1899" height="2" key="GridCell.Tab.0.center" timestamp="1589213852693">
+      <screen x="0" y="23" width="1920" height="1022" />
+    </state>
+    <state width="1899" height="2" key="GridCell.Tab.0.center/0.23.1920.1022@0.23.1920.1022" timestamp="1589213852693" />
+    <state width="1899" height="2" key="GridCell.Tab.0.left" timestamp="1589213852693">
+      <screen x="0" y="23" width="1920" height="1022" />
+    </state>
+    <state width="1899" height="2" key="GridCell.Tab.0.left/0.23.1920.1022@0.23.1920.1022" timestamp="1589213852693" />
+    <state width="1899" height="2" key="GridCell.Tab.0.right" timestamp="1589213852694">
+      <screen x="0" y="23" width="1920" height="1022" />
+    </state>
+    <state width="1899" height="2" key="GridCell.Tab.0.right/0.23.1920.1022@0.23.1920.1022" timestamp="1589213852694" />
+    <state x="637" y="366" key="com.intellij.ide.util.TipDialog" timestamp="1589262026117">
+      <screen x="0" y="23" width="1920" height="1022" />
+    </state>
+    <state x="637" y="366" key="com.intellij.ide.util.TipDialog/0.23.1920.1022@0.23.1920.1022" timestamp="1589262026117" />
+    <state x="618" y="169" width="683" height="729" key="find.popup" timestamp="1589268990372">
+      <screen x="0" y="23" width="1920" height="1022" />
+    </state>
+    <state x="618" y="169" width="683" height="729" key="find.popup/0.23.1920.1022@0.23.1920.1022" timestamp="1589268990372" />
   </component>
 </project>

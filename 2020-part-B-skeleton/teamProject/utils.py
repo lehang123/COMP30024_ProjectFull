@@ -189,7 +189,7 @@ def boom_zone(stack, exclude_self=False, check_valid=False):
 
     if exclude_self:
         zone = [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
-         [x + 1, y - 1]]
+                [x + 1, y - 1]]
     else:
         zone = [[x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y], [x, y], [x + 1, y], [x - 1, y - 1], [x, y - 1],
                 [x + 1, y - 1]]
@@ -201,7 +201,14 @@ def boom_zone(stack, exclude_self=False, check_valid=False):
 
 def update_nodes(oppo_nodes, action_stacks, stacks, nodes, index, me, oppo):
     """
-
+    Generate a board configuration after an action and add this node to nodes
+    @param oppo_nodes: the opponent tokens
+    @param action_stacks: new stack after the action
+    @param stacks: original stacks
+    @param nodes: the nodes that stored all possible board configuration after moves
+    @param index: the index of the stack that has been moved
+    @param me: the color of us
+    @param oppo: the color of opponent
     """
     node = {}
     my_nodes = action_stacks + stacks
@@ -231,7 +238,7 @@ def count_pieces(_for, node):
     :param node: the current board
     :return: the number of pieces on board for that player
     """
-    return sum((map((lambda x:x[0]), node[_for])))
+    return sum((map((lambda x: x[0]), node[_for])))
 
 
 def lists_to_tuples(lists):
@@ -258,9 +265,6 @@ def tuples_to_lists(tuples):
         return [tuples_to_lists(t) for t in tuples]
     else:
         return tuples
-
-# def first_max(tup1, tup2):
-#     return tup1 if tup1[0]>=tup2[0] else tup2
 
 
 def print_board(board_dict, message="", unicode=False, compact=True, **kwargs):
@@ -464,8 +468,8 @@ def nodes_to_move(before, after, color):
                 [(b_n, b_x, b_y), (_, b_x1, b_y1)] = _before
                 for (n, x, y) in _after:
                     if x == b_x and y == b_y:
-                        n_m = n-b_n
-                if n_m>0:
+                        n_m = n - b_n
+                if n_m > 0:
                     x_1, y_1, x_2, y_2 = b_x1, b_y1, b_x, b_y
                 else:
                     x_1, y_1, x_2, y_2 = b_x, b_y, b_x1, b_y1
@@ -497,14 +501,14 @@ def nodes_to_move(before, after, color):
                     else:
                         x_2, y_2 = x, y
 
-        return 'MOVE', n_m, (x_1, y_1), (x_2, y_2)
+        return "MOVE", n_m, (x_1, y_1), (x_2, y_2)
         # print_move(n_m, x_1, y_1, x_2, y_2)
 
-    elif nex_pieces_num<cur_pieces_num:
+    elif nex_pieces_num < cur_pieces_num:
         # white become less, boomed
         (_, x, y) = list(set(cur_pieces).difference(nex_pieces))[0]
         # print_boom(x, y)
-        return 'BOOM', (x, y)
+        return "BOOM", (x, y)
     else:
         # print("panic, growing number of whites")
         return None
@@ -583,7 +587,7 @@ def clusters_count(stacks, num_clusters=0):
     ground_zero = boom_zone(head)
     exploded = []
 
-    filter_list(stacks, (lambda x : x not in ground_zero), exploded)
+    filter_list(stacks, (lambda x: x not in ground_zero), exploded)
 
     for exp in exploded:
         chain_explode(exp, stacks)
@@ -622,7 +626,7 @@ def get_clusters(stacks):
     head = stacks[0][1::]
     ground_zero = boom_zone(head)
     exploded = []
-    filter_list(stacks, (lambda x : x[1::] not in ground_zero), exploded)
+    filter_list(stacks, (lambda x: x[1::] not in ground_zero), exploded)
     new_exploded = []
     for exp in exploded:
         new_exploded += chain_cluster(exp, stacks)
@@ -633,7 +637,12 @@ def get_clusters(stacks):
 
 
 def chain_cluster(exp, stacks):
-
+    """
+    Chain different separate clusters together when boom zone intersect
+    :param exp: exploded token
+    :param stacks: other surrounding tokens
+    :return: tokens affected by explosion
+    """
     ground_zero = boom_zone(exp[1::])
     exploded = []
 
@@ -877,11 +886,11 @@ def speedy_manhattan(position, stack):
     """
     step = stack[0]
 
-    x = abs(position[0]- stack[1])
+    x = abs(position[0] - stack[1])
     y = abs(position[1] - stack[2])
 
-    y_step = math.ceil(y/float(step))
-    x_step = math.ceil(x/float(step))
+    y_step = math.ceil(y / float(step))
+    x_step = math.ceil(x / float(step))
 
     ans = x_step + y_step
     return ans

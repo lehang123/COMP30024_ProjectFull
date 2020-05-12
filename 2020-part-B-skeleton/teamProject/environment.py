@@ -31,8 +31,8 @@ class Environment:
 
     def make_move(self, board_dict):
         """
-        :param board_dict the board configuration after move
         player makes move to the environment
+        :param board_dict the board configuration after move
         """
         (whites, blacks) = board_dict_to_tuple(board_dict)
         move = tuple(sorted(whites)), tuple(sorted(blacks))
@@ -57,9 +57,14 @@ class Environment:
         return black_num
 
     def get_legal_moves(self, include_boom=True):
-        return self.board.get_legal_moves(include_boom = include_boom)
+        return self.board.get_legal_moves(include_boom=include_boom)
 
     def make_random_move(self, include_boom=False):
+        """
+        make a random move (for breaking "mirror move" problem)
+        :param include_boom: whether the random move should include boom action or not
+        :return: the random move made
+        """
         moves = self.get_legal_moves(include_boom=include_boom)
 
         move_tups = []
@@ -103,7 +108,7 @@ class Environment:
             player = players[self.board.turn.value]
 
             move = player.get_move()
-            if random_move and np.random.rand() < 0.1 :
+            if random_move and np.random.rand() < 0.1:
                 self.make_random_move()
             else:
                 self.make_move(move)
@@ -142,7 +147,7 @@ class Environment:
         if action == 'MOVE':
             (n, (b_x, b_y), (a_x, a_y)) = param
             # assert move inbound
-            assert 0 <= b_x <= 7 and 0 <= b_y <= 7 and 0 <= a_x <= 7 and 0 <= a_y <= 7 and ((b_x, b_y)!=(a_x, a_y))
+            assert 0 <= b_x <= 7 and 0 <= b_y <= 7 and 0 <= a_x <= 7 and 0 <= a_y <= 7 and ((b_x, b_y) != (a_x, a_y))
 
             for stack in stacks:
                 if stack[1::] == (b_x, b_y):
@@ -150,21 +155,21 @@ class Environment:
                     legal_move = True
                     step_on_opponent = (a_x, a_y) in [b[1::] for b in blocks]
 
-                    in_move_range = ((b_x == a_x) and (abs(a_y-b_y)<=stack[0])) \
-                                    or ((a_y == b_y) and (abs(a_x-b_x)<=stack[0]))
+                    in_move_range = ((b_x == a_x) and (abs(a_y - b_y) <= stack[0])) \
+                                    or ((a_y == b_y) and (abs(a_x - b_x) <= stack[0]))
 
-                    assert (not step_on_opponent) and in_move_range and n<=stack[0]
+                    assert (not step_on_opponent) and in_move_range and n <= stack[0]
 
-                    if stack[0]-n != 0: # if not moving all pieces from before
-                        new_stack = (stack[0]-n, b_x, b_y)
+                    if stack[0] - n != 0:  # if not moving all pieces from before
+                        new_stack = (stack[0] - n, b_x, b_y)
                         new_stacks.append(new_stack)
-                    if (a_x, a_y) not in [s[1::] for s in stacks]: # if after position is new
+                    if (a_x, a_y) not in [s[1::] for s in stacks]:  # if after position is new
                         new_stacks.append((n, a_x, a_y))
 
-                elif stack[1::] != (a_x, a_y): # if stack is neither in before or after, keep it the same
+                elif stack[1::] != (a_x, a_y):  # if stack is neither in before or after, keep it the same
                     new_stacks.append(stack)
-                else: # if the stack is in after, update the stack
-                    new_stack = (stack[0]+n, a_x, a_y)
+                else:  # if the stack is in after, update the stack
+                    new_stack = (stack[0] + n, a_x, a_y)
                     new_stacks.append(new_stack)
             assert legal_move
 
@@ -174,7 +179,7 @@ class Environment:
         elif action == 'BOOM':
             (boom_x, boom_y) = param
             assert 0 <= boom_x <= 7 and 0 <= boom_x <= 7 and ((boom_x, boom_y) in [s[1::] for s in stacks])
-            boom_dict = {color_dict[color]: tuples_to_lists(stacks), color_dict[block_color]:tuples_to_lists(blocks)}
+            boom_dict = {color_dict[color]: tuples_to_lists(stacks), color_dict[block_color]: tuples_to_lists(blocks)}
 
             # boom action, the 1 is just an placeholder, doesn't matter
             boom((1, boom_x, boom_y), boom_dict)
@@ -186,7 +191,6 @@ class Environment:
 
 
 class Board:
-
     class Result(Enum):
         WHITE_WINS = 1
         BLACK_WINS = 2
@@ -237,7 +241,6 @@ class Board:
             self.turn = Board.Turn.WHITE
 
         self.update_game()
-        # self.show_board()
 
     def get_legal_moves(self, include_boom=True, turn_to_tuple=False):
         """

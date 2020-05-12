@@ -1,6 +1,5 @@
 from math import tanh
-from teamProject.utils import get_clusters, boom_zone, lists_to_tuples, make_goal,\
-    print_board, boom_affected_num, speedy_manhattan
+from teamProject.utils import get_clusters, boom_zone, lists_to_tuples, boom_affected_num, speedy_manhattan
 
 
 def mobility_eval(board, next_turn, is_soft=False):
@@ -46,13 +45,20 @@ def mobility_eval(board, next_turn, is_soft=False):
     white_choke_points_score = choke_points_score(white_choke_points, white_stacks, black_stacks, black_pieces_num)
     black_choke_points_score = choke_points_score(black_choke_points, black_stacks, white_stacks, white_pieces_num)
 
-    final_score = 5*((white_pieces_num - black_pieces_num)/float(12))\
-                  + (white_control_score - black_control_score) + 2*(white_choke_points_score - black_choke_points_score)
+    # w1=5, w2=1, w3=2
+    final_score = 5 * ((white_pieces_num - black_pieces_num) / float(12)) \
+                  + (white_control_score - black_control_score) + 2 * (
+                          white_choke_points_score - black_choke_points_score)
 
     return tanh(final_score)
 
 
 def get_choke_points(choke_points, clusters_bzs):
+    """
+    get the fatal positions
+    :param choke_points: fatal positions that if boom happens one party will lose all tokens
+    :param clusters_bzs: boom zones of clusters
+    """
     dic = {}
     for cluster_bzs in clusters_bzs:
         for bz in cluster_bzs:
@@ -76,22 +82,36 @@ def get_choke_points(choke_points, clusters_bzs):
 
 
 def choke_points_score(choke_points, stacks, blocks, blocks_num):
+    """
+    calsulate the fatal point score
+    :param choke_points: fatal points
+    :param stacks: stacks around the fatal point
+    :param blocks: separate clusters (not linked together)
+    :param blocks_num: number of separate clusters (not linked together)
+    :return: the fatal point score
+    """
     score = 0
     if blocks_num < len(choke_points):
         return 1.0
     for cp in choke_points:
-
         affected_num = boom_affected_num(cp, stacks.copy())
 
         shortest = min([speedy_manhattan(cp, b) for b in blocks])
 
-        score += (12 - affected_num + 3*shortest)
+        score += (12 - affected_num + 3 * shortest)
 
-    return score/float(372.0)
+    # 372 is the highest score possible in perfect situation
+    return score / float(372.0)
 
 
 def control_score_fast(clusters, cluster_bzs, is_soft=False):
-
+    """
+    calculate the control score
+    :param clusters: clusters
+    :param cluster_bzs: clusters' boom zones
+    :param is_soft: whether implement the function as soft evaluation
+    :return: the control score
+    """
     p_dict = {}
     stack_ps = []
     for cluster in clusters:
@@ -111,5 +131,6 @@ def control_score_fast(clusters, cluster_bzs, is_soft=False):
     score = 0
     for key in p_dict:
         score += p_dict[key]
-    return score/float(704.0)
 
+    # 704 is the highest score possible in perfect situation
+    return score / float(704.0)

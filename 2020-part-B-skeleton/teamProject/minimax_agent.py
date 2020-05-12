@@ -1,5 +1,3 @@
-import time
-
 from teamProject.book_of_moves import is_terrible_move, terrific_move
 from teamProject.utils import make_nodes
 
@@ -12,7 +10,10 @@ class MinimaxAgent:
         self.sort_eval = sort_eval
 
     def get_move(self):
-        # start = time.time()
+        """
+        Get changes on the board
+        :return: the move
+        """
         white_num = self.env.get_white_num()
         black_num = self.env.get_black_num()
 
@@ -25,7 +26,7 @@ class MinimaxAgent:
         move = terrific_move(self.env.get_board(), self.env.get_turn(), turn_count)
 
         search_depth = self.minimax_depth
-        total_token = (white_num+black_num)
+        total_token = (white_num + black_num)
 
         if 5 < total_token < 16:
             search_depth = 3
@@ -75,7 +76,6 @@ class MinimaxAgent:
         children = self.filter(node, children, turn_to)
         if maximizing:
             value = -1.0
-            # children = make_nodes(node, self.env.get_turn())
             for child in children:
                 new_value = self.minimax_alphabeta(child, depth - 1, α, β, False)
                 if new_value >= value:
@@ -87,7 +87,6 @@ class MinimaxAgent:
 
         else:
             value = 1.0
-            # children = make_nodes(node, self.env.get_turn())
             for child in children:
                 new_value = self.minimax_alphabeta(child, depth - 1, α, β, True)
                 if new_value <= value:

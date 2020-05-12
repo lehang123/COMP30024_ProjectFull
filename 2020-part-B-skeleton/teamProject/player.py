@@ -34,7 +34,6 @@ class ExamplePlayer:
 
         return command
 
-
     def update(self, colour, action):
         """
         This method is called at the end of every turn (including your player’s
@@ -59,4 +58,3 @@ class ExamplePlayer:
 
         move = self.environment.get_move_from_command(action)
         self.environment.make_move(move)
-
